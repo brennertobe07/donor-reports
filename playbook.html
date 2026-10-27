@@ -1,0 +1,1015 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+</head>
+<body>
+<title>Donor Score Fundraising Playbook</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* Layout: one reading column, programs as three peer cards, a working calculator near the end. DPVA dark theme (shared with ENR / absentee / cure). */
+  :root {
+    --bg: #0f1117; --surface: #1a1d27; --surface2: #20243a; --border: #2a2d3a; --border2: #353a50;
+    --text: #e8eaf0; --muted: #8890a8; --accent: #3a8fd4; --accent-bg: rgba(58,143,212,.12);
+    --green: #2fb36b; --amber: #f0a500; --amber-bg: rgba(240,165,0,.10);
+    --radius: 6px;
+    --font: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --mono: 'DM Mono', ui-monospace, Consolas, monospace;
+    color-scheme: dark;
+  }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font); font-size: 15px; line-height: 1.5; }
+  .wrap { max-width: 80rem; margin-inline: auto; padding-block: 28px 56px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 36px; }
+  h1, h2, h3 { margin: 0; text-wrap: balance; line-height: 1.2; }
+  h1 { font-size: 1.9rem; font-weight: 700; letter-spacing: -0.01em; }
+  h2 { font-size: 1.25rem; font-weight: 600; }
+  h3 { font-size: 1rem; font-weight: 600; }
+  p { margin: 0; }
+  .muted { color: var(--muted); }
+  .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  .eyebrow { font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+  header { display: grid; gap: 10px; }
+  header .lede { color: var(--muted); max-width: 64ch; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); gap: 12px; }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; display: grid; gap: 4px; }
+  .stat .v { font-family: var(--mono); font-size: 1.6rem; font-weight: 500; font-variant-numeric: tabular-nums; }
+  .stat .l { color: var(--muted); font-size: 0.85rem; }
+  .callout { border: 1px solid var(--amber); background: var(--amber-bg); border-radius: var(--radius); padding: 14px 16px; display: grid; gap: 6px; }
+  .callout h3 { color: var(--amber); }
+  .callout p, .callout li { max-width: 80ch; }
+  .callout ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 4px; }
+  section { display: grid; gap: 14px; min-width: 0; }
+  section > .intro { color: var(--muted); max-width: 72ch; }
+  .tablebox { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+  table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+  th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  th { color: var(--muted); font-weight: 500; font-size: 0.8rem; background: var(--surface2); white-space: nowrap; }
+  td.n, th.n { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .pill { display: inline-block; font-size: 0.72rem; font-weight: 600; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+  .pill.ok { color: var(--green); background: rgba(47,179,107,.12); }
+  .pill.check { color: var(--amber); background: var(--amber-bg); }
+  .programs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); gap: 14px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+  .card .tag { color: var(--accent); font-size: 0.8rem; font-weight: 600; }
+  .card ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 6px; color: var(--text); }
+  .card li span.muted { font-size: 0.85rem; }
+  .asks { display: flex; flex-wrap: wrap; gap: 6px; }
+  .ask { font-family: var(--mono); font-size: 0.8rem; padding: 2px 8px; border: 1px solid var(--border2); border-radius: var(--radius); background: var(--surface2); white-space: nowrap; }
+  .ask.lead { border-color: var(--accent); background: var(--accent-bg); color: var(--text); }
+  .calc { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: 14px; }
+  .presets { display: flex; flex-wrap: wrap; gap: 6px; }
+  .presets button { font: inherit; font-size: 0.82rem; padding: 6px 10px; border-radius: var(--radius); border: 1px solid var(--border2); background: var(--surface2); color: var(--text); cursor: pointer; }
+  .presets button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-bg); }
+  .presets button:focus-visible, .field input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr)); gap: 12px; }
+  .field { display: grid; gap: 4px; }
+  .field label { font-size: 0.8rem; color: var(--muted); }
+  .field input { font-family: var(--mono); font-size: 0.95rem; padding: 7px 9px; border-radius: var(--radius); border: 1px solid var(--border2); background: var(--bg); color: var(--text); width: 100%; box-sizing: border-box; }
+  .results { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .res { background: var(--surface2); border-radius: var(--radius); padding: 10px 12px; display: grid; gap: 2px; }
+  .res .v { font-family: var(--mono); font-size: 1.15rem; font-variant-numeric: tabular-nums; }
+  .res .v.good { color: var(--green); } .res .v.bad { color: var(--amber); }
+  .res .l { font-size: 0.78rem; color: var(--muted); }
+  .check { display: flex; gap: 8px; align-items: flex-start; font-size: 0.85rem; cursor: pointer; }
+  .check input { margin-top: 3px; accent-color: var(--accent); }
+  .check input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  tr.total td { font-weight: 600; background: var(--surface2); }
+  .adj { font-size: 0.88rem; }
+  .dongrid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 0.9fr) minmax(0, 0.8fr) minmax(0, 0.8fr); gap: 8px 10px; align-items: center; }
+  .dongrid .dh { font-size: 0.75rem; color: var(--muted); }
+  .dongrid .n { text-align: right; }
+  .dongrid input[type=number] { font-family: var(--mono); font-size: 0.9rem; padding: 6px 8px; border-radius: var(--radius); border: 1px solid var(--border2); background: var(--bg); color: var(--text); width: 100%; box-sizing: border-box; min-width: 0; }
+  .dongrid input[type=number]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .adj b { font-weight: 600; color: var(--accent); }
+  .slide { display: grid; grid-template-columns: minmax(0, 1fr) 8.5rem; gap: 10px; align-items: center; }
+  .slide input[type=range] { width: 100%; accent-color: var(--accent); }
+  .slide input[type=range]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  ol.steps { margin: 0; padding-left: 1.3rem; display: grid; gap: 8px; max-width: 80ch; }
+  .foot { color: var(--muted); font-size: 0.82rem; display: grid; gap: 6px; max-width: 85ch; }
+  .field select { font: inherit; font-size: 0.9rem; padding: 7px 9px; border-radius: var(--radius); border: 1px solid var(--border2); background: var(--bg); color: var(--text); width: 100%; box-sizing: border-box; }
+  .field select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .scenrow { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); gap: 12px 18px; align-items: end; }
+  .presets button[data-scen="cons"][aria-pressed="true"] { border-color: var(--amber); background: var(--amber-bg); }
+  .presets button[data-scen="opt"][aria-pressed="true"] { border-color: var(--green); background: rgba(47,179,107,.12); }
+  /* Month guide: one column per month, bar height = gifts vs an average month */
+  .season { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 6px; height: 200px; padding: 16px 14px 12px; }
+  .mcol { display: flex; flex-direction: column; justify-content: flex-end; gap: 4px; min-width: 0; text-align: center; }
+  .mtrack { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; min-height: 0; }
+  .mbar { border-radius: 4px 4px 0 0; min-height: 4px; }
+  .mbar.cons { background: var(--amber); } .mbar.exp { background: var(--accent); } .mbar.opt { background: var(--green); }
+  .season.deciles { grid-template-columns: repeat(10, minmax(0, 1fr)); height: 180px; }
+  .dgroup { flex-direction: row; align-items: flex-end; gap: 2px; }
+  .dgroup .dbar { flex: 1; border-radius: 3px 3px 0 0; }
+  .mv { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
+  .ml { font-size: 0.75rem; color: var(--muted); border-top: 1px solid var(--border2); padding-top: 4px; }
+  #x-sql, #tx-sql { width: 100%; box-sizing: border-box; min-height: 16rem; font-family: var(--mono); font-size: 0.75rem; line-height: 1.45; background: var(--bg); color: var(--text); border: 1px solid var(--border2); border-radius: var(--radius); padding: 10px; resize: vertical; }
+  #x-sql:focus-visible, #tx-sql:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  details > summary { cursor: pointer; color: var(--muted); font-size: 0.85rem; }
+  details > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  details[open] > summary { margin-bottom: 8px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 0.82rem; color: var(--muted); }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+  td .sw { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 6px; }
+  /* Calculator: inputs left, results + export pinned on the right */
+  .calc-head { display: grid; gap: 4px; }
+  .calc-head p { font-size: 0.85rem; max-width: 90ch; }
+  .calc2 { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 14px; align-items: start; }
+  .calc2 .card { padding: 14px 16px; gap: 10px; }
+  .calc2 .inputs { gap: 0; padding-block: 2px; }
+  .blk { display: grid; gap: 8px; padding-block: 12px; border-bottom: 1px solid var(--border); }
+  .h3sub { font-weight: 400; font-size: 0.8rem; margin-left: 6px; }
+  .side { position: sticky; top: 12px; display: grid; gap: 14px; }
+  .costrow { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; }
+  .field.inline { grid-template-columns: auto 6rem; align-items: center; gap: 8px; }
+  .small { font-size: 0.8rem; }
+  .how { padding-block: 10px; }
+  .how .foot { padding-left: 1.1rem; margin: 0; }
+  table.tight { font-size: 0.8rem; }
+  table.tight th, table.tight td { padding: 6px 8px; }
+  table.tight td:first-child { white-space: nowrap; }
+  .blk .scenrow { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: end; }
+  .blk .scenrow .field { flex: 1 1 12rem; }
+  .calc2 .field input, .calc2 .field select, .calc2 .dongrid input[type=number] { padding-block: 5px; }
+  .calc2 .dongrid { gap: 6px 10px; }
+  #calculator .results { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #calculator .res .v { font-size: 1.05rem; }
+  #x-sql, #tx-sql { min-height: 12rem; }
+  .fields.four { grid-template-columns: repeat(auto-fit, minmax(min(100%, 7.5rem), 1fr)); }
+  @media (max-width: 62rem) { .calc2 { grid-template-columns: 1fr; } .side { position: static; } }
+  @media (max-width: 30rem) { h1 { font-size: 1.55rem; } .results { grid-template-columns: 1fr; } .season { gap: 3px; padding-inline: 8px; } .mv { font-size: 0.6rem; } .ml { font-size: 0.65rem; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">DPVA Finance · Donor Score · built 2026-10-20</span>
+    <h1>Donor Score fundraising playbook</h1>
+    <p class="lede">How to put the three scores to work in mail, digital, text and call time, who to ask, and how much. Counts come from Finance.dbo.VOTER_DONOR_SCORES joined to VAN and DPVA's own donor file. Response rates are assumptions to replace with test results.</p>
+  </header>
+
+  <div class="stats">
+    <div class="stat"><span class="v">416,169</span><span class="l">Top-10% voters with no matched gift anywhere: the new-donor pool</span></div>
+    <div class="stat"><span class="v">27,819</span><span class="l">DPVA's own donors (ActBlue + NGP) who score top 10%</span></div>
+    <div class="stat"><span class="v">372,403</span><span class="l">Mailable households among those new-donor prospects</span></div>
+    <div class="stat"><span class="v">166,244</span><span class="l">Textable cell numbers among the new-donor prospects (VAN-flagged cells)</span></div>
+  </div>
+
+  <section id="segments">
+    <h2>Who to ask</h2>
+    <p class="intro">Why the top 10%: voters split into ten equal groups by score (10 is the highest), each bar the share of that score's donors in the group. All three scores put two-thirds or more of their donors in the top group: 65% for Donor, 68% for Federal, 75% for State/Local.</p>
+    <div class="card" style="padding:0">
+      <div class="season deciles" id="deciles" role="img" aria-label="Share of donors by score decile. Top decile: Donor Score 64.8%, Federal 67.6%, State/Local 74.6%. Deciles 1 to 7 each hold under 4%."></div>
+    </div>
+    <div class="legend"><span><i style="background:var(--accent)"></i>Donor Score</span><span><i style="background:var(--green)"></i>Fed Donor Score</span><span><i style="background:var(--amber)"></i>State/Local Donor Score</span></div>
+    <p class="intro">Five segments, from the safest and warmest to the coldest. Top 5% means a Donor Score of 96–100; top 10% means 91–100.</p>
+    <div class="tablebox">
+      <table>
+        <thead><tr><th>Segment</th><th class="n">People</th><th>Best channels</th><th>Lead ask</th><th>List source</th></tr></thead>
+        <tbody>
+          <tr><td>DPVA donors, top 10%, gave 2025–26</td><td class="n">4,377</td><td>Email, mail renewal, monthly upgrade</td><td>Highest gift ×1.5</td><td><span class="pill ok">DPVA file</span></td></tr>
+          <tr><td>DPVA donors, top 10%, last gave 2022–24</td><td class="n">4,973</td><td>Mail renewal, text, email</td><td>Highest gift</td><td><span class="pill ok">DPVA file</span></td></tr>
+          <tr><td>DPVA donors, top 10%, last gave before 2022</td><td class="n">18,469</td><td>Reactivation mail, text</td><td>Last gift, $35 floor</td><td><span class="pill ok">DPVA file</span></td></tr>
+          <tr><td>No matched gift, Donor Score 96–100</td><td class="n">166,316</td><td>Prospect mail (146,951 households), text, paid social</td><td>$35</td><td><span class="pill check">Score</span></td></tr>
+          <tr><td>No matched gift, Donor Score 91–95</td><td class="n">249,853</td><td>Text, paid social; mail only after the 96–100 test pays</td><td>$25</td><td><span class="pill check">Score</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="programs">
+    <h2>Programs</h2>
+    <div class="programs">
+      <div class="card">
+        <span class="tag">A · Direct mail</span>
+        <h3>Renew DPVA donors, then test prospect mail by score</h3>
+        <ul>
+          <li><b>Renewal and reactivation:</b> mail all 27,819 top-10% DPVA donors. The 18,469 who last gave before 2022 are the biggest win-back pool on the file.</li>
+          <li><b>Prospect test:</b> mail the 146,951 Donor Score 96–100 households with no matched gift. Hold back a random 10% as an unmailed control so the lift is measurable.</li>
+          <li><b>Roll out by band:</b> add 91–95 (225,452 households) only if the 96–100 cell beats breakeven. Leave voters scored 1–70 off prospect mail. They are 70% of voters but almost none give (0.7%).</li>
+          <li><b>Package:</b> one household piece addressed to the highest-scoring voter at the address, with a reply device carrying the ask string.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="tag">B · Digital and text</span>
+        <h3>Phones and ad audiences, since cold prospects have almost no emails</h3>
+        <ul>
+          <li><b>The gap:</b> only 25 of the 166,316 top-5% prospects have an email that is not already on DPVA's email list. Email fundraising works for DPVA's own ActBlue donors, but it cannot reach new prospects without an email append.</li>
+          <li><b>Subscribers who never gave:</b> 25,615 top-5% prospects (51,726 in the top 10%) are on DPVA's email list but have no matched gift. They already get DPVA's email asks, so they are not counted as email prospects. The email program can sort them by score for a first-gift ask.</li>
+          <li><b>Peer-to-peer text:</b> 68,960 top-5% prospects have a number VAN flags as a cell (most VAN "cell phones" are flagged likely landlines). Send a short ask with an ActBlue link, tested in waves of 10–20K by score band.</li>
+          <li><b>Paid social matched audiences:</b> upload name, address and cell for the top 5% to Meta and Google. Seed lookalikes from DPVA's own donors only.</li>
+          <li><b>Monthly upgrade:</b> 434 of the 4,377 active top-10% DPVA donors already give monthly. Ask the rest to switch to $10, $15 or $25 a month.</li>
+          <li><b>Email append:</b> a vendor can add emails for the 140,618 top-5% prospects with no usable email. Price it against the text and ads results first.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="tag">C · Call time, events, phones</span>
+        <h3>Other ways the score helps</h3>
+        <ul>
+          <li><b>Call time:</b> 3,007 top-10% DPVA donors have given $250 or more in one gift. Rank candidate and chair call sheets by score, then by highest gift.</li>
+          <li><b>House parties and events:</b> pick hosts and invite lists by locality. Fairfax, Arlington, Loudoun, Chesterfield and Henrico hold the most top-10% prospects.</li>
+          <li><b>Telefundraising:</b> 94% of top-5% prospects have a phone in VAN, so a paid phone program can reach the households mail does not convert.</li>
+          <li><b>Suppression:</b> drop voters scored 1–70 from every cold prospect list to save postage and ad spend.</li>
+          <li><b>2027 General Assembly:</b> the State/Local Donor Score finds likely state givers for HD and Senate candidates' own prospecting.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="asks">
+    <h2>Ask amounts</h2>
+    <p class="intro">For DPVA's own donors, build the ask string from their highest DPVA gift: the gift itself, 1.5×, then 2×, rounded to friendly amounts, with the middle amount circled. For prospects with no history, start low. Top-5% voters who already give have a median average gift of $37.50 and a median highest gift of $100. Across DPVA's own file the median highest gift is $31.</p>
+    <div class="tablebox">
+      <table>
+        <thead><tr><th>Who</th><th>Ask string (lead amount highlighted)</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Prospect, Donor Score 96–100</td><td><div class="asks"><span class="ask">$25</span><span class="ask lead">$35</span><span class="ask">$50</span><span class="ask">$100</span><span class="ask">Other</span></div></td><td class="muted">Test $35 against a $25 lead in the first mailing.</td></tr>
+          <tr><td>Prospect, Donor Score 91–95</td><td><div class="asks"><span class="ask">$15</span><span class="ask lead">$25</span><span class="ask">$50</span><span class="ask">Other</span></div></td><td class="muted">Text and ads. Lower cost per contact.</td></tr>
+          <tr><td>DPVA donor, highest gift under $50</td><td><div class="asks"><span class="ask">$25</span><span class="ask lead">$35</span><span class="ask">$50</span></div></td><td class="muted">Most of the file. Push monthly $10.</td></tr>
+          <tr><td>DPVA donor, highest gift $50–99</td><td><div class="asks"><span class="ask">$50</span><span class="ask lead">$75</span><span class="ask">$100</span></div></td><td></td></tr>
+          <tr><td>DPVA donor, highest gift $100–249</td><td><div class="asks"><span class="ask">$100</span><span class="ask lead">$150</span><span class="ask">$250</span></div></td><td></td></tr>
+          <tr><td>DPVA donor, highest gift $250–999</td><td><div class="asks"><span class="ask">$250</span><span class="ask lead">$500</span><span class="ask">$1,000</span></div></td><td class="muted">Mail plus a personal call.</td></tr>
+          <tr><td>DPVA donor, highest gift $1,000+</td><td><div class="asks"><span class="ask lead">Personal ask</span></div></td><td class="muted">Call time. The state account has no contribution limit. The federal account caps at $10,000 a year per donor across state, district and local party federal accounts.</td></tr>
+          <tr><td>Lapsed DPVA donor (before 2022)</td><td><div class="asks"><span class="ask">Last gift</span><span class="ask lead">$35</span><span class="ask">$50</span></div></td><td class="muted">Win-back copy. Lead with the most recent gift, not the highest.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="timing">
+    <h2>When to mail: the month guide</h2>
+    <p class="intro">One-time gifts DPVA received in each calendar month, compared with an average month (1.00×). The figure is the median of 2018–2025, ActBlue and NGP, counting only one-time gifts under $100. That leaves out recurring gifts, event money and voter-file subscription sales, so it tracks ordinary donors. Months when DPVA donors already give heavily get the optimistic rates. Slow months get the conservative ones. The calculator's month picker uses this table.</p>
+    <div class="card" style="padding:0">
+      <div class="season" id="season" role="img" aria-label="DPVA one-time gifts by month versus an average month: January 0.73, February 0.58, March 0.82, April 0.72, May 0.70, June 0.96, July 0.99, August 1.08, September 1.72, October 2.25, November 0.79, December 0.68"></div>
+    </div>
+    <div class="legend"><span><i style="background:var(--amber)"></i>Conservative: under 0.85×</span><span><i style="background:var(--accent)"></i>Expected: 0.85–1.5×</span><span><i style="background:var(--green)"></i>Optimistic: 1.5× and up</span></div>
+    <div class="tablebox">
+      <table>
+        <thead><tr><th>Assumption</th><th>Months</th><th class="n">Score 96–100</th><th class="n">Score 91–95</th><th class="n">Gave by mail</th><th class="n">Gave 2025–26</th><th class="n">Last gave 2022–24</th><th class="n">Lapsed pre-2022</th></tr></thead>
+        <tbody>
+          <tr><td><span class="sw" style="background:var(--amber)"></span>Conservative</td><td>Jan–May, Nov, Dec</td><td class="n">0.4% · $20</td><td class="n">0.25% · $18</td><td class="n">7% · $60</td><td class="n">6% · $55</td><td class="n">3% · $42</td><td class="n">1.5% · $38</td></tr>
+          <tr><td><span class="sw" style="background:var(--accent)"></span>Expected</td><td>Jun–Aug</td><td class="n">0.6% · $25</td><td class="n">0.4% · $22</td><td class="n">12% · $75</td><td class="n">8% · $65</td><td class="n">4% · $50</td><td class="n">2% · $45</td></tr>
+          <tr><td><span class="sw" style="background:var(--green)"></span>Optimistic</td><td>Sep–Oct</td><td class="n">0.8% · $30</td><td class="n">0.5% · $25</td><td class="n">15% · $90</td><td class="n">10% · $75</td><td class="n">5% · $55</td><td class="n">3% · $50</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul class="foot" style="padding-left:1.1rem; margin:0">
+      <li>September and October peak every year, in state-election (odd) and federal (even) years alike. Campaign mail is heaviest then too, so the optimistic rates assume a letter with real election urgency.</li>
+      <li>December is slow for DPVA (0.68×), unlike the year-end rush most nonprofits see. Test one December drop before writing the month off.</li>
+      <li>This is when donors gave, which follows when DPVA asked. It is not a measured mail response. The rates in the table are judgment until a test replaces them.</li>
+    </ul>
+  </section>
+
+  <section id="calculator">
+    <div class="calc-head">
+      <h2>Mail campaign calculator</h2>
+      <p class="muted">Household counts are real. Response rates and gifts come from the assumption you pick, and the cost per piece is a guess. The donor cell's net pays down what prospecting costs.</p>
+    </div>
+    <div class="calc2">
+      <div class="card inputs">
+        <div class="blk">
+          <h3>Return assumption</h3>
+          <div class="scenrow">
+            <div class="presets" role="group" aria-label="Return assumption" id="scen-pick">
+              <button type="button" data-scen="cons">Conservative</button>
+              <button type="button" data-scen="exp">Expected</button>
+              <button type="button" data-scen="opt">Optimistic</button>
+            </div>
+            <div class="field">
+              <label for="month">Mail month <span class="muted">(sets the assumption)</span></label>
+              <select id="month">
+                <option value="">Any month</option>
+                <option value="0">January</option><option value="1">February</option><option value="2">March</option><option value="3">April</option>
+                <option value="4">May</option><option value="5">June</option><option value="6">July</option><option value="7">August</option>
+                <option value="8">September</option><option value="9">October</option><option value="10">November</option><option value="11">December</option>
+              </select>
+            </div>
+          </div>
+          <p class="adj muted" id="scen-hint" aria-live="polite"></p>
+        </div>
+
+        <div class="blk">
+          <h3>Prospects <span class="muted h3sub">no matched gift</span></h3>
+          <div class="presets" role="group" aria-label="Prospect segment" id="pros-pick">
+            <button type="button" data-hh="146951" data-overlap="5232" data-curve="A">Score 96–100</button>
+            <button type="button" data-hh="225452" data-overlap="3248" data-curve="B">Score 91–95</button>
+            <button type="button" data-hh="372403" data-overlap="8480" data-curve="AB">Score 91–100</button>
+          </div>
+          <label class="check"><input type="checkbox" id="skip-overlap" checked> <span>Skip households where a DPVA donor lives (<span class="num" id="overlap-n">—</span>)</span></label>
+          <div class="field">
+            <label for="p-hh">Households to mail <span class="muted">(of <span class="num" id="p-avail">—</span>, highest scores first)</span></label>
+            <div class="slide"><input id="p-range" type="range" min="0" step="1000" aria-label="Prospect households to mail"><input id="p-hh" type="number" min="0" step="1000"></div>
+          </div>
+          <div class="fields">
+            <div class="field"><label for="p-rr">Response, full list (%)</label><input id="p-rr" type="number" min="0" step="0.1" value="0.8"></div>
+            <div class="field"><label for="p-gift">Average gift ($)</label><input id="p-gift" type="number" min="0" step="1" value="38"></div>
+          </div>
+          <p class="adj" aria-live="polite">Expected response for this list: <b class="num" id="p-rr-adj">—</b> <span class="muted" id="p-lift"></span></p>
+        </div>
+
+        <div class="blk">
+          <h3>Known DPVA donors <span class="muted h3sub">top 10%, one piece per household</span></h3>
+          <div class="dongrid" role="group" aria-label="DPVA donor groups">
+            <span class="dh">Include</span><span class="dh n">Households</span><span class="dh">Response %</span><span class="dh">Avg gift $</span>
+            <label class="check" for="g8-on"><input type="checkbox" id="g8-on" checked> <span>Gave by mail (any year)</span></label><span class="num n" id="g8-hh">—</span>
+            <input id="g8-rr" type="number" min="0" step="0.5" value="12" aria-label="Gave by mail response rate"><input id="g8-gift" type="number" min="0" step="1" value="75" aria-label="Gave by mail average gift">
+            <label class="check" for="g1-on"><input type="checkbox" id="g1-on" checked> <span>Gave 2025–26</span></label><span class="num n" id="g1-hh">—</span>
+            <input id="g1-rr" type="number" min="0" step="0.5" value="10" aria-label="Gave 2025–26 response rate"><input id="g1-gift" type="number" min="0" step="1" value="60" aria-label="Gave 2025–26 average gift">
+            <label class="check" for="g2-on"><input type="checkbox" id="g2-on" checked> <span>Last gave 2022–24</span></label><span class="num n" id="g2-hh">—</span>
+            <input id="g2-rr" type="number" min="0" step="0.5" value="5" aria-label="Last gave 2022–24 response rate"><input id="g2-gift" type="number" min="0" step="1" value="45" aria-label="Last gave 2022–24 average gift">
+            <label class="check" for="g4-on"><input type="checkbox" id="g4-on" checked> <span>Lapsed before 2022</span></label><span class="num n" id="g4-hh">—</span>
+            <input id="g4-rr" type="number" min="0" step="0.5" value="3" aria-label="Lapsed before 2022 response rate"><input id="g4-gift" type="number" min="0" step="1" value="40" aria-label="Lapsed before 2022 average gift">
+          </div>
+          <div class="costrow">
+            <p class="adj">Donor households selected: <b class="num" id="d-sel">—</b></p>
+            <div class="field inline"><label for="cpp">Cost per piece, both cells ($)</label><input id="cpp" type="number" min="0" step="0.05" value="0.70"></div>
+          </div>
+        </div>
+
+        <details class="how">
+          <summary>How the numbers work</summary>
+          <ul class="foot">
+            <li>Cutting the prospect list drops the lowest-scored households first, so the people left are likelier to give. The rise follows the model's donor probabilities for these prospects. It is a guide until a test measures the real curve.</li>
+            <li>A donor household counts in the mail row if anyone there has given to a DPVA direct-mail appeal. Otherwise it counts in the group of its most recent DPVA gift. Counts update with the mix.</li>
+            <li>New donors are the prospect cell's gifts. Prospect mail that loses money can still pay off, because new donors renew later. Judge it on cost per new donor as well as first-mailing net.</li>
+          </ul>
+        </details>
+      </div>
+
+      <div class="side">
+        <div class="card">
+          <h3>Projected result</h3>
+          <div class="tablebox">
+            <table aria-live="polite" class="tight">
+              <thead><tr><th>Cell</th><th class="n">Households</th><th class="n">Cost</th><th class="n">Gifts</th><th class="n">Gross</th><th class="n">Net</th></tr></thead>
+              <tbody>
+                <tr><td>Prospects</td><td class="n" id="r-p-hh">—</td><td class="n" id="r-p-cost">—</td><td class="n" id="r-p-gifts">—</td><td class="n" id="r-p-gross">—</td><td class="n" id="r-p-net">—</td></tr>
+                <tr><td>DPVA donors</td><td class="n" id="r-d-hh">—</td><td class="n" id="r-d-cost">—</td><td class="n" id="r-d-gifts">—</td><td class="n" id="r-d-gross">—</td><td class="n" id="r-d-net">—</td></tr>
+                <tr class="total"><td>Combined</td><td class="n" id="r-t-hh">—</td><td class="n" id="r-t-cost">—</td><td class="n" id="r-t-gifts">—</td><td class="n" id="r-t-gross">—</td><td class="n" id="r-t-net">—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="results">
+            <div class="res"><span class="v" id="o-cpnd">—</span><span class="l">Cost per new donor, prospects alone</span></div>
+            <div class="res"><span class="v" id="o-cpnd2">—</span><span class="l">Cost per new donor after donor net</span></div>
+            <div class="res"><span class="v" id="o-cover">—</span><span class="l">Prospect loss the donor mailing covers</span></div>
+            <div class="res"><span class="v" id="o-saved">—</span><span class="l">Saved by skipping donor households</span></div>
+          </div>
+        </div>
+
+        <div class="card" id="export">
+          <h3>Export the list</h3>
+          <p class="muted small">A SQL Server query for this selection. Run it in SSMS on INSTANCE-1 and save as CSV: one row per household (its highest-scoring voter), with a Mail / Control column that holds back a fixed 10%.</p>
+          <div class="scenrow">
+            <div class="presets" role="group" aria-label="ID to export" id="id-pick">
+              <button type="button" data-id="VANID" aria-pressed="true">VANID</button>
+              <button type="button" data-id="StateFileID" aria-pressed="false">StateFileID</button>
+            </div>
+            <div class="presets">
+              <button type="button" id="x-dl">Download .sql</button>
+              <button type="button" id="x-copy">Copy query</button>
+            </div>
+          </div>
+          <p class="adj" id="x-sum" aria-live="polite"></p>
+          <p class="muted small" id="x-msg" aria-live="polite"></p>
+          <details>
+            <summary>Show the query</summary>
+            <textarea id="x-sql" readonly spellcheck="false" aria-label="Export query"></textarea>
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="texting">
+    <div class="calc-head">
+      <h2>Text campaign calculator</h2>
+      <p class="muted">Peer-to-peer text with an ActBlue link. Counts are numbers VAN flags as a cell (Verified or Likely Cell), one text per number. Rates are judgment until a test replaces them. Response runs as a funnel: delivered, clicked, gave.</p>
+    </div>
+    <div class="calc2">
+      <div class="card inputs">
+        <div class="blk">
+          <h3>Return assumption</h3>
+          <div class="scenrow">
+            <div class="presets" role="group" aria-label="Text return assumption" id="t-scen-pick">
+              <button type="button" data-scen="cons">Conservative</button>
+              <button type="button" data-scen="exp">Expected</button>
+              <button type="button" data-scen="opt">Optimistic</button>
+            </div>
+            <div class="field">
+              <label for="t-month">Send month <span class="muted">(sets the assumption)</span></label>
+              <select id="t-month">
+                <option value="">Any month</option>
+                <option value="0">January</option><option value="1">February</option><option value="2">March</option><option value="3">April</option>
+                <option value="4">May</option><option value="5">June</option><option value="6">July</option><option value="7">August</option>
+                <option value="8">September</option><option value="9">October</option><option value="10">November</option><option value="11">December</option>
+              </select>
+            </div>
+          </div>
+          <p class="adj muted" id="t-scen-hint" aria-live="polite"></p>
+        </div>
+
+        <div class="blk">
+          <h3>Program costs <span class="muted h3sub">both cells</span></h3>
+          <div class="fields four">
+            <div class="field"><label for="t-cpm">Cost per message ($)</label><input id="t-cpm" type="number" min="0" step="0.01" value="0.05"></div>
+            <div class="field"><label for="t-msgs">Messages per number</label><input id="t-msgs" type="number" min="1" step="1" value="2"></div>
+            <div class="field"><label for="t-dlv">Delivered (%)</label><input id="t-dlv" type="number" min="0" max="100" step="1" value="92"></div>
+            <div class="field"><label for="t-opt">Opt-out / message (%)</label><input id="t-opt" type="number" min="0" max="100" step="0.5" value="2"></div>
+          </div>
+        </div>
+
+        <div class="blk">
+          <h3>Prospects <span class="muted h3sub">no matched gift</span></h3>
+          <div class="presets" role="group" aria-label="Text prospect segment" id="t-pros-pick">
+            <button type="button" data-n="68960" data-overlap="274" data-curve="A">Score 96–100</button>
+            <button type="button" data-n="97284" data-overlap="186" data-curve="B">Score 91–95</button>
+            <button type="button" data-n="166244" data-overlap="460" data-curve="AB">Score 91–100</button>
+          </div>
+          <label class="check"><input type="checkbox" id="t-skip" checked> <span>Skip numbers that belong to a DPVA donor (<span class="num" id="t-overlap-n">—</span>)</span></label>
+          <div class="field">
+            <label for="t-n">Numbers to text <span class="muted">(of <span class="num" id="t-avail">—</span>, highest scores first)</span></label>
+            <div class="slide"><input id="t-range" type="range" min="0" step="1000" aria-label="Prospect numbers to text"><input id="t-n" type="number" min="0" step="1000"></div>
+          </div>
+          <div class="fields">
+            <div class="field"><label for="t-ctr">Click-through, full list (%)</label><input id="t-ctr" type="number" min="0" step="0.1" value="2.5"></div>
+            <div class="field"><label for="t-give">Give rate of clicks (%)</label><input id="t-give" type="number" min="0" step="0.5" value="10"></div>
+            <div class="field"><label for="t-gift">Average gift ($)</label><input id="t-gift" type="number" min="0" step="1" value="22"></div>
+          </div>
+          <p class="adj" aria-live="polite">Gifts per number texted: <b class="num" id="t-rr-adj">—</b> <span class="muted" id="t-lift"></span></p>
+        </div>
+
+        <div class="blk">
+          <h3>Known DPVA donors <span class="muted h3sub">top 10%, one text per number</span></h3>
+          <div class="dongrid" role="group" aria-label="DPVA donor groups to text">
+            <span class="dh">Include</span><span class="dh n">Numbers</span><span class="dh">Gave %</span><span class="dh">Avg gift $</span>
+            <label class="check" for="t8-on"><input type="checkbox" id="t8-on" checked> <span>Gave by mail (any year)</span></label><span class="num n" id="t8-n">—</span>
+            <input id="t8-rr" type="number" min="0" step="0.5" value="2.5" aria-label="Gave by mail text response"><input id="t8-gift" type="number" min="0" step="1" value="50" aria-label="Gave by mail text average gift">
+            <label class="check" for="t1-on"><input type="checkbox" id="t1-on" checked> <span>Gave 2025–26</span></label><span class="num n" id="t1-n">—</span>
+            <input id="t1-rr" type="number" min="0" step="0.5" value="5" aria-label="Gave 2025–26 text response"><input id="t1-gift" type="number" min="0" step="1" value="40" aria-label="Gave 2025–26 text average gift">
+            <label class="check" for="t2-on"><input type="checkbox" id="t2-on" checked> <span>Last gave 2022–24</span></label><span class="num n" id="t2-n">—</span>
+            <input id="t2-rr" type="number" min="0" step="0.5" value="2.5" aria-label="Last gave 2022–24 text response"><input id="t2-gift" type="number" min="0" step="1" value="35" aria-label="Last gave 2022–24 text average gift">
+            <label class="check" for="t4-on"><input type="checkbox" id="t4-on" checked> <span>Lapsed before 2022</span></label><span class="num n" id="t4-n">—</span>
+            <input id="t4-rr" type="number" min="0" step="0.5" value="1.2" aria-label="Lapsed before 2022 text response"><input id="t4-gift" type="number" min="0" step="1" value="30" aria-label="Lapsed before 2022 text average gift">
+          </div>
+          <p class="adj">Donor numbers selected: <b class="num" id="t-d-sel">—</b> <span class="muted">· gave % is of numbers texted</span></p>
+        </div>
+
+        <details class="how">
+          <summary>How the numbers work</summary>
+          <ul class="foot">
+            <li>Cost is every message sent: numbers × messages per number × cost per message. Undelivered messages still cost.</li>
+            <li>Prospect gifts = numbers × delivered × click-through × give rate of clicks. Cutting the list keeps the highest scores, so click-through rises along the model's donor probabilities for these numbers (the same curve as the mail calculator).</li>
+            <li>Each message loses the opt-out share of delivered numbers. Those numbers cannot be texted again, which is the cost of a heavy send that the net does not show.</li>
+            <li>Only about a third of VAN's CellPhone values are flagged as cells, so the textable list is much smaller than "has a cell phone" suggests.</li>
+          </ul>
+        </details>
+      </div>
+
+      <div class="side">
+        <div class="card">
+          <h3>Projected result</h3>
+          <div class="tablebox">
+            <table aria-live="polite" class="tight">
+              <thead><tr><th>Cell</th><th class="n">Numbers</th><th class="n">Cost</th><th class="n">Gifts</th><th class="n">Gross</th><th class="n">Net</th></tr></thead>
+              <tbody>
+                <tr><td>Prospects</td><td class="n" id="tr-p-hh">—</td><td class="n" id="tr-p-cost">—</td><td class="n" id="tr-p-gifts">—</td><td class="n" id="tr-p-gross">—</td><td class="n" id="tr-p-net">—</td></tr>
+                <tr><td>DPVA donors</td><td class="n" id="tr-d-hh">—</td><td class="n" id="tr-d-cost">—</td><td class="n" id="tr-d-gifts">—</td><td class="n" id="tr-d-gross">—</td><td class="n" id="tr-d-net">—</td></tr>
+                <tr class="total"><td>Combined</td><td class="n" id="tr-t-hh">—</td><td class="n" id="tr-t-cost">—</td><td class="n" id="tr-t-gifts">—</td><td class="n" id="tr-t-gross">—</td><td class="n" id="tr-t-net">—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="results">
+            <div class="res"><span class="v" id="to-cpnd">—</span><span class="l">Cost per new donor, prospects alone</span></div>
+            <div class="res"><span class="v" id="to-cpnd2">—</span><span class="l">Cost per new donor after donor net</span></div>
+            <div class="res"><span class="v" id="to-msgs">—</span><span class="l">Messages sent</span></div>
+            <div class="res"><span class="v" id="to-lost">—</span><span class="l">Numbers lost to opt-out</span></div>
+          </div>
+        </div>
+
+        <div class="card" id="t-export">
+          <h3>Export the text list</h3>
+          <p class="muted small">A SQL Server query for this selection: ID, first and last name, the cell number, segment and score, one row per number. TestGroup holds back the same fixed 10% of voters as the mail export, so a voter's control status matches across both channels.</p>
+          <div class="scenrow">
+            <div class="presets" role="group" aria-label="ID to export" id="t-id-pick">
+              <button type="button" data-id="VANID" aria-pressed="true">VANID</button>
+              <button type="button" data-id="StateFileID" aria-pressed="false">StateFileID</button>
+            </div>
+            <div class="presets">
+              <button type="button" id="tx-dl">Download .sql</button>
+              <button type="button" id="tx-copy">Copy query</button>
+            </div>
+          </div>
+          <p class="adj" id="tx-sum" aria-live="polite"></p>
+          <p class="muted small" id="tx-msg" aria-live="polite"></p>
+          <details>
+            <summary>Show the query</summary>
+            <textarea id="tx-sql" class="sqlbox" readonly spellcheck="false" aria-label="Text export query"></textarea>
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="test">
+    <h2>Run it as a test first</h2>
+    <ol class="steps">
+      <li>Pull lists from VOTER_DONOR_SCORES: DPVA donors by VANID, prospects with no VA_DONORS row, Donor Score 96–100, one piece per household. The calculator's Export button writes this query.</li>
+      <li>Split each list at random: 90% mailed or texted, 10% held back as a control. Code each cell by score band and ask string.</li>
+      <li>After 90 days, compare response and average gift by band against the control. That gives the true lift of the score. DPVA's past mail drops had 75% of their gifts in by 30 days, 87% by 60 and 91% by 90. A 60-day read should be divided by 0.87.</li>
+      <li>Load responders back into NGP so the next model build learns from them, then roll out to the bands that paid.</li>
+    </ol>
+  </section>
+
+  <div class="foot">
+    <p>Counts: VA voters in VAN scored 2026-10-20. "No matched gift" means no row in Finance.dbo.VA_DONORS: no matched gift from any source in any year. DPVA's own donors are matched ActBlue (AB) and NGP contributors, 38,396 in all, any year. Households are distinct mailing address plus ZIP. Gift medians for prospects come from top-5% voters who already give (all matched sources), used only as a reference point for amounts, not to select anyone.</p>
+    <p>Email counts (2026-10-27) come from Finance.dbo.VA_PROSPECTS, which adds NGP Digital emails and holds voters on the current voter file, so its top-5% total differs slightly from the count above. Every active Digital email belongs to a current DPVA email subscriber.</p>
+    <p>Not included: donors who never matched to a voter, and out-of-state donors.</p>
+  </div>
+</div>
+
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const usd = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+  const usd2 = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const int = new Intl.NumberFormat('en-US');
+  const val = (id) => Math.max(0, +$(id).value || 0);
+  // Prospects with no matched gift, 25 equal bins per band, highest model probability first:
+  // average DonorProb per bin (VOTER_DONOR_SCORES, 2026-10-20). A = score 96-100, B = 91-95.
+  const CURVE = {
+    A: [.732366,.611697,.556030,.518228,.489399,.465481,.444886,.426938,.411093,.396545,.383334,.370943,.359540,.348752,.338835,.329557,.320763,.312633,.304936,.297477,.290440,.283778,.277421,.271307,.265353].map((p) => [6653, p]),
+    B: [.258351,.250375,.242725,.235508,.228583,.222066,.215815,.209902,.204208,.198803,.193666,.188694,.183934,.179368,.174943,.170748,.166661,.162679,.158867,.155189,.151641,.148187,.144869,.141672,.138574].map((p) => [9994, p]),
+  };
+  CURVE.AB = CURVE.A.concat(CURVE.B);
+  // How much likelier the top share of a list is to give than the whole list.
+  function lift(bins, share) {
+    const total = bins.reduce((s, [n]) => s + n, 0), all = bins.reduce((s, [n, p]) => s + n * p, 0) / total;
+    let want = Math.max(1, share * total), got = 0, sum = 0;
+    for (const [n, p] of bins) { const take = Math.min(n, want - got); if (take <= 0) break; got += take; sum += take * p; }
+    return got > 0 ? (sum / got) / all : 1;
+  }
+  const money = (n) => (n < 0 ? '−' : '') + usd.format(Math.abs(n));
+  let pros = null, fullList = true, scen = 'exp';
+  // Return assumptions: [response %, average gift $] per prospect band and DPVA donor group. Judgment, not measured.
+  // Prospect gifts follow DPVA's typical one-time gift under $100 (about $17-22 in every month, 2018-2025).
+  // Donor gifts lean toward DPVA's 2022-25 direct-mail drops: average about $109, median $50-75.
+  const SCEN = {
+    cons: { A: [0.4, 20], B: [0.25, 18], AB: [0.3, 19], g8: [7, 60],  g1: [6, 55],  g2: [3, 42], g4: [1.5, 38] },
+    exp:  { A: [0.6, 25], B: [0.4, 22],  AB: [0.5, 23], g8: [12, 75], g1: [8, 65],  g2: [4, 50], g4: [2, 45] },
+    opt:  { A: [0.8, 30], B: [0.5, 25],  AB: [0.6, 27], g8: [15, 90], g1: [10, 75], g2: [5, 55], g4: [3, 50] },
+  };
+  const SCEN_NAME = { cons: 'Conservative', exp: 'Expected', opt: 'Optimistic' };
+  // One-time AB + NGP gifts under $100 per calendar month vs an average month, median of 2018-2025 (sql/playbook_queries.sql ##months).
+  const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const MONTH_FULL = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const SEASON = [0.73, 0.58, 0.82, 0.72, 0.70, 0.96, 0.99, 1.08, 1.72, 2.25, 0.79, 0.68];
+  const monthScen = (x) => (x >= 1.5 ? 'opt' : x >= 0.85 ? 'exp' : 'cons');
+  const maxS = Math.max(...SEASON);
+  $('season').innerHTML = SEASON.map((x, i) =>
+    '<div class="mcol"><div class="mtrack"><span class="mv">' + x.toFixed(2) + '</span><div class="mbar ' + monthScen(x) + '" style="height:' + (x / maxS * 85).toFixed(1) + '%"></div></div><span class="ml">' + MONTHS[i] + '</span></div>').join('');
+  // Share of each score's donors in each score decile, 1-10 (reports\donor-scores\breakdown-data\deciles.csv, 2026-10-20 build).
+  const DECILES = {
+    accent: [0.1, 0.3, 0.6, 0.9, 1.5, 2.4, 3.9, 7.6, 17.8, 64.8],
+    green:  [0.1, 0.3, 0.4, 0.7, 1.1, 1.9, 3.4, 6.9, 17.7, 67.6],
+    amber:  [0.1, 0.2, 0.4, 0.6, 1.0, 1.7, 3.0, 5.6, 12.8, 74.6],
+  };
+  const maxD = Math.max(...Object.values(DECILES).flat());
+  $('deciles').innerHTML = DECILES.accent.map((_, i) =>
+    '<div class="mcol"><div class="mtrack dgroup">' + Object.entries(DECILES).map(([c, v]) =>
+      '<div class="dbar" style="background:var(--' + c + ');height:' + Math.max(1, v[i] / maxD * 90).toFixed(1) + '%"></div>').join('') +
+    '</div><span class="ml">' + (i + 1) + '</span></div>').join('');
+  // Top-10% DPVA donor households by which groups live there (bit 1 = gave 2025-26, 2 = last gave
+  // 2022-24, 4 = lapsed before 2022, 8 = someone gave under a DPVA direct-mail source code in NGP),
+  // from VOTER_DONOR_SCORES + AB/NGP gifts + NGP_WORK (sql/playbook_queries.sql ##mail).
+  const MASKS = { 1: 3558, 2: 4086, 3: 64, 4: 16850, 5: 178, 6: 204, 7: 2, 9: 461, 10: 491, 11: 19, 12: 582, 13: 51, 14: 42, 15: 1 };
+  const GROUPS = [8, 1, 2, 4];   // the order a shared household is claimed in
+  function split(sel) {
+    const hhBy = { 8: 0, 1: 0, 2: 0, 4: 0 };
+    for (const [m, n] of Object.entries(MASKS)) { const g = GROUPS.find((x) => +m & x & sel); if (g) hhBy[g] += n; }
+    return hhBy;
+  }
+  function donorCell(cpp) {
+    const on = GROUPS.filter((g) => $('g' + g + '-on').checked);
+    const sel = on.reduce((s, g) => s | g, 0);
+    const hhBy = split(sel);
+    GROUPS.forEach((g) => { $('g' + g + '-hh').textContent = int.format(split(sel | g)[g]); });
+    let hh = 0, gifts = 0, gross = 0;
+    for (const g of on) { const gi = hhBy[g] * val('g' + g + '-rr') / 100; hh += hhBy[g]; gifts += gi; gross += gi * val('g' + g + '-gift'); }
+    const cost = hh * cpp;
+    return { hh, cost, gifts, gross, net: gross - cost, hhBy, sel };
+  }
+  function cell(hh, rr, gift, cpp) { const cost = hh * cpp, gifts = hh * rr / 100, gross = gifts * gift; return { hh, cost, gifts, gross, net: gross - cost }; }
+  function put(prefix, c) {
+    $(prefix + '-hh').textContent = int.format(Math.round(c.hh));
+    $(prefix + '-cost').textContent = usd.format(c.cost);
+    $(prefix + '-gifts').textContent = int.format(Math.round(c.gifts));
+    $(prefix + '-gross').textContent = usd.format(c.gross);
+    const n = $(prefix + '-net'); n.textContent = money(c.net); n.style.color = c.net >= 0 ? 'var(--green)' : 'var(--amber)';
+  }
+  function calc() {
+    const cpp = val('cpp'), skip = $('skip-overlap').checked;
+    const overlap = pros ? +pros.dataset.overlap : 0;
+    $('overlap-n').textContent = int.format(overlap);
+    const avail = (pros ? +pros.dataset.hh : 0) - (skip ? overlap : 0);
+    $('p-avail').textContent = int.format(avail);
+    $('p-range').max = avail; $('p-hh').max = avail;
+    if (fullList || val('p-hh') > avail) $('p-hh').value = avail;
+    const phh = Math.min(val('p-hh'), avail);
+    $('p-range').value = phh;
+    const lf = pros && avail > 0 && phh > 0 ? lift(CURVE[pros.dataset.curve], phh / avail) : 1;
+    const rrAdj = val('p-rr') * lf;
+    $('p-rr-adj').textContent = rrAdj.toFixed(2) + '%';
+    $('p-lift').textContent = lf > 1.005 ? '(' + lf.toFixed(2) + '× the full-list rate)' : '(full list)';
+    const p = cell(phh, rrAdj, val('p-gift'), cpp);
+    const d = donorCell(cpp);
+    $('d-sel').textContent = int.format(d.hh);
+    const t = { hh: p.hh + d.hh, cost: p.cost + d.cost, gifts: p.gifts + d.gifts, gross: p.gross + d.gross, net: p.net + d.net };
+    put('r-p', p); put('r-d', d); put('r-t', t);
+    const nd = p.gifts;
+    $('o-cpnd').textContent = nd > 0 ? (p.net >= 0 ? 'Pays for itself' : usd2.format(-p.net / nd)) : '—';
+    const after = p.net + Math.max(0, d.net);
+    $('o-cpnd2').textContent = nd > 0 ? (after >= 0 ? 'Pays for itself' : usd2.format(-after / nd)) : '—';
+    $('o-cover').textContent = p.net < 0 ? (Math.min(1, Math.max(0, d.net) / -p.net) * 100).toFixed(0) + '%' : (p.net >= 0 && pros ? 'No loss' : '—');
+    $('o-saved').textContent = skip && fullList ? usd.format(overlap * cpp) : skip ? 'n/a (partial list)' : '$0';
+    buildExport(phh, skip, d);
+  }
+
+  // Export: writes the T-SQL that pulls this selection's IDs on INSTANCE-1. Same household
+  // rules as the counts above (household = mailing address + ZIP; DPVA donor = AB/NGP gift).
+  const BANDS = { A: [96, 100, '96-100'], B: [91, 95, '91-95'], AB: [91, 100, '91-100'] };
+  const GROUP_NAME = { 8: 'gave by mail', 1: 'gave 2025-26', 2: 'last gave 2022-24', 4: 'lapsed before 2022' };
+  let idCol = 'VANID', xName = 'donor_list.sql';
+  function buildExport(phh, skip, d) {
+    const [lo, hi, band] = BANDS[pros.dataset.curve];
+    const now = new Date(), p2 = (n) => String(n).padStart(2, '0');
+    const today = now.getFullYear() + '-' + p2(now.getMonth() + 1) + '-' + p2(now.getDate());
+    const hhmm = String(now.getHours()).padStart(2, '0') + String(now.getMinutes()).padStart(2, '0') + String(now.getSeconds()).padStart(2, '0');
+    const stamp = now.toLocaleTimeString('en-US');
+    const groups = GROUPS.filter((g) => d.sel & g);
+    const gtxt = groups.length ? groups.map((g) => GROUP_NAME[g] + ' (' + int.format(d.hhBy[g]) + ')').join(', ') : 'none';
+    xName = 'donor_list_' + band + '_' + phh + 'hh' + (groups.length ? '_donors-g' + groups.join('g') : '') + '_' + today + '_' + hhmm + '.sql';
+    $('x-sum').textContent = int.format(phh) + ' prospect households (score ' + band + ') + ' + int.format(d.hh) + ' DPVA donor households, by ' + idCol + '. Query built ' + stamp + '.';
+    $('x-sql').value = `-- DPVA donor-score mail list. Built by the playbook calculator on ${today} at ${stamp}.
+-- Columns: ${idCol}, Cell, DonorScore, TestGroup.
+-- Prospects: score ${band}, top ${phh} households by DonorProb${skip ? ', skipping households where a DPVA donor lives' : ''}.
+-- DPVA donors (top 10%): ${gtxt}.
+-- Expected rows: ${phh + d.hh} (${phh} prospect + ${d.hh} donor households), against the 2026-10-20 score build.
+-- Output: one row per household, the highest-scoring voter there. TestGroup marks a fixed 10% Control.
+-- VAN data (Voter File Swap Agreement): keep on DPVA systems.
+SET NOCOUNT ON;
+DECLARE @MinScore int = ${lo}, @MaxScore int = ${hi};
+DECLARE @ProspectHouseholds int = ${phh};
+DECLARE @SkipDonorHouseholds bit = ${skip ? 1 : 0};
+DECLARE @Groups int = ${d.sel};   -- 8 gave by mail, 1 gave 2025-26, 2 last gave 2022-24, 4 lapsed before 2022 (summed)
+
+-- DPVA's own donors: matched ActBlue and NGP gifts, with each voter's last gift
+IF OBJECT_ID('tempdb..#own') IS NOT NULL DROP TABLE #own;
+SELECT a.Identification_Number AS StateFileID, MAX(a.ContributionDate) AS LastGift
+INTO #own
+FROM Finance.dbo.ALL_CONTRIBUTIONS a
+WHERE a.Source IN ('AB','NGP') AND a.Identification_Number <> '' AND a.Amount > 0
+GROUP BY a.Identification_Number;
+
+-- past mail donors: NGP gifts under DPVA direct-mail source codes, 1998-2025 (D4D and Victory Fund left out)
+IF OBJECT_ID('tempdb..#mail') IS NOT NULL DROP TABLE #mail;
+SELECT DISTINCT TRY_CAST(NULLIF(n.VanID_VB,'') AS bigint) AS VANID
+INTO #mail
+FROM Finance.dbo.NGP_WORK n
+WHERE TRY_CAST(NULLIF(n.VanID_VB,'') AS bigint) IS NOT NULL
+  AND n.SourceCode IN ('07 TK Mail', '08 Webb MP', '09_1DM', '09_2DM', '10_Mem', '11_TheyWin', '15_DM', '2000 dm10', '2000 dm2',
+    '2000 dm6', '2000 dm7', '2000 dm8', '2024_Swecker', '23_Inc_Mail_22Mailer', '98 CSR DM', '98 EVL DM', '98 Ldr DM', '99 mbr dm',
+    'cc2000DM1', 'Core_Inc_Mail_24HWK', 'Core_Inc_Mail_24OctoberSwecker', 'Core_Inc_Mail_25Bagby', 'Dm 01', 'Dm 01 B', 'DM 01 C',
+    'DM 01 E', 'DM 02 A', 'DM 02 C', 'DM 03 A', 'DM 03 B', 'DM 04 A', 'DM 04 C', 'DM 04 D', 'DM 05 A', 'DM 05 B', 'DM0606', 'DM0608', 'Dm1');
+
+-- top-10% voters and every DPVA donor, keyed by household
+IF OBJECT_ID('tempdb..#v') IS NOT NULL DROP TABLE #v;
+SELECT s.VANID, v.StateFileID, s.DonorScore, s.DonorProb, o.LastGift,
+       CAST(UPPER(LTRIM(RTRIM(ISNULL(NULLIF(v.mAddress,''), v.Address)))) + '|' + ISNULL(NULLIF(v.mZip5,''), v.Zip5) AS varchar(200)) AS HH,
+       CASE WHEN o.LastGift >= '2025-01-01' THEN 1 WHEN o.LastGift >= '2022-01-01' THEN 2 WHEN o.LastGift IS NOT NULL THEN 4 END AS Grp,
+       CASE WHEN d.VANID IS NULL THEN 1 ELSE 0 END AS NoGift,
+       CASE WHEN ml.VANID IS NOT NULL THEN 1 ELSE 0 END AS Mail
+INTO #v
+FROM Finance.dbo.VOTER_DONOR_SCORES s
+JOIN Voter.dbo.Van v ON v.VoterFileVANID = s.VANID AND v.State = 'VA'
+LEFT JOIN #own o ON o.StateFileID = v.StateFileID
+LEFT JOIN Finance.dbo.VA_DONORS d ON d.VANID = s.VANID
+LEFT JOIN #mail ml ON ml.VANID = TRY_CAST(s.VANID AS bigint)
+WHERE s.DonorScore > 90 OR o.StateFileID IS NOT NULL;
+DELETE FROM #v WHERE HH IS NULL;
+CREATE CLUSTERED INDEX ix ON #v (HH);
+
+IF OBJECT_ID('tempdb..#dpvahh') IS NOT NULL DROP TABLE #dpvahh;
+SELECT DISTINCT HH INTO #dpvahh FROM #v WHERE Grp IS NOT NULL;
+CREATE UNIQUE CLUSTERED INDEX ix ON #dpvahh (HH);
+
+-- prospects (no matched gift anywhere): one voter per household, highest DonorProb
+IF OBJECT_ID('tempdb..#p') IS NOT NULL DROP TABLE #p;
+SELECT VANID, StateFileID, DonorScore, DonorProb
+INTO #p
+FROM (SELECT v.*, ROW_NUMBER() OVER (PARTITION BY v.HH ORDER BY v.DonorProb DESC, v.VANID) AS rn
+      FROM #v v
+      WHERE v.NoGift = 1 AND v.DonorScore BETWEEN @MinScore AND @MaxScore
+        AND (@SkipDonorHouseholds = 0 OR NOT EXISTS (SELECT 1 FROM #dpvahh h WHERE h.HH = v.HH))) x
+WHERE rn = 1;
+
+-- DPVA donors in the top 10%: one per household. A past mail donor claims the household first
+-- (when that row is picked), then the most recent selected group. R: 0 = mail, else the group bit.
+IF OBJECT_ID('tempdb..#d') IS NOT NULL DROP TABLE #d;
+SELECT VANID, StateFileID, DonorScore, R
+INTO #d
+FROM (SELECT y.*, ROW_NUMBER() OVER (PARTITION BY y.HH ORDER BY y.R, y.LastGift DESC, y.DonorProb DESC, y.VANID) AS rn
+      FROM (SELECT v.*, CASE WHEN v.Mail = 1 AND @Groups & 8 > 0 THEN 0 WHEN v.Grp & @Groups > 0 THEN v.Grp END AS R
+            FROM #v v WHERE v.Grp IS NOT NULL AND v.DonorScore > 90) y
+      WHERE y.R IS NOT NULL) x
+WHERE rn = 1;
+
+SELECT x.${idCol}, x.Cell, x.DonorScore,
+       CASE WHEN ABS(CHECKSUM(CAST(x.VANID AS varchar(20)) + '|holdout')) % 10 = 0 THEN 'Control' ELSE 'Mail' END AS TestGroup
+FROM (SELECT 'Prospect ${band}' AS Cell, VANID, StateFileID, DonorScore
+      FROM (SELECT TOP (@ProspectHouseholds) * FROM #p ORDER BY DonorProb DESC, VANID) t
+      UNION ALL
+      SELECT CASE R WHEN 0 THEN 'Donor gave by mail' WHEN 1 THEN 'Donor gave 2025-26' WHEN 2 THEN 'Donor last gave 2022-24' ELSE 'Donor lapsed before 2022' END,
+             VANID, StateFileID, DonorScore
+      FROM #d) x
+ORDER BY x.Cell, x.DonorScore DESC;
+`;
+  }
+  // Download .sql: the local copy saves through a link; claude.ai saves through its downloads
+  // capability, which does not allow .sql, so the file there is <name>.sql.txt.
+  const framed = window.self !== window.top;
+  let saver = null;
+  if (framed) {
+    $('x-dl').hidden = true; $('tx-dl').hidden = true;
+    if (window.claude && window.claude.use) window.claude.use('downloads').then((d) => { saver = d; if (d) { $('x-dl').hidden = false; $('tx-dl').hidden = false; } }).catch(() => {});
+  }
+  const RUN_TIP = '. Open it in SSMS on INSTANCE-1, run it, then right-click the results and choose Save Results As.';
+  function saveSql(text, name, msg) {
+    if (saver) {
+      const fname = name + '.txt';
+      saver.save({ filename: fname, data: text }).then(
+        () => { msg.textContent = 'Saved ' + fname + RUN_TIP; },
+        (e) => { msg.textContent = e && e.code === 'declined' ? 'Download cancelled.' : 'This view blocks downloads. Use Copy query, or open Show the query and copy it.'; });
+      return;
+    }
+    try {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([text], { type: 'text/plain' }));
+      a.download = name; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      msg.textContent = 'Saved ' + name + RUN_TIP;
+    } catch (e) { msg.textContent = 'This view blocks downloads. Use Copy query, or open Show the query and copy it.'; }
+  }
+  const ib = $('id-pick').querySelectorAll('button');
+  ib.forEach((b) => b.addEventListener('click', () => { idCol = b.dataset.id; ib.forEach((x) => x.setAttribute('aria-pressed', String(x === b))); $('x-msg').textContent = ''; calc(); }));
+  $('x-dl').addEventListener('click', () => saveSql($('x-sql').value, xName, $('x-msg')));
+  $('x-copy').addEventListener('click', () => {
+    const t = $('x-sql'), done = () => { $('x-msg').textContent = 'Query copied. Paste it into SSMS on INSTANCE-1 and run it.'; };
+    const fallback = () => {
+      t.closest('details').open = true; t.focus(); t.select();
+      try { if (document.execCommand('copy')) return done(); } catch (e) { /* fall through */ }
+      $('x-msg').textContent = 'Copy is blocked here. The query is selected below: press Ctrl+C.';
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t.value).then(done, fallback); else fallback();
+  });
+  function group(id, onPick) {
+    const btns = $(id).querySelectorAll('button');
+    btns.forEach((b) => b.addEventListener('click', () => { btns.forEach((x) => x.setAttribute('aria-pressed', String(x === b))); onPick(b); calc(); }));
+    return btns;
+  }
+  function setProspectRates() { const r = SCEN[scen][pros.dataset.curve]; $('p-rr').value = r[0]; $('p-gift').value = r[1]; }
+  function applyScen() {
+    setProspectRates();
+    GROUPS.forEach((g) => { const r = SCEN[scen]['g' + g]; $('g' + g + '-rr').value = r[0]; $('g' + g + '-gift').value = r[1]; });
+    sb.forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.scen === scen)));
+    const m = $('month').value;
+    $('scen-hint').textContent = m === ''
+      ? SCEN_NAME[scen] + ' rates. Pick a mail month to use the month guide instead.'
+      : MONTH_FULL[m] + ': DPVA donors give ' + SEASON[m].toFixed(2) + '× an average month, so the guide uses ' + SCEN_NAME[scen].toLowerCase() + ' rates.';
+  }
+  const pb = group('pros-pick', (b) => { pros = b; fullList = true; setProspectRates(); });
+  const sb = group('scen-pick', (b) => { scen = b.dataset.scen; $('month').value = ''; applyScen(); });
+  $('month').addEventListener('change', () => { const m = $('month').value; if (m !== '') scen = monthScen(SEASON[m]); applyScen(); calc(); });
+  $('p-hh').addEventListener('input', () => { fullList = val('p-hh') >= +$('p-hh').max; calc(); });
+  $('p-range').addEventListener('input', () => { $('p-hh').value = $('p-range').value; fullList = val('p-hh') >= +$('p-range').max; calc(); });
+  ['cpp', 'p-rr', 'p-gift', 'skip-overlap'].concat(...GROUPS.map((g) => ['g' + g + '-on', 'g' + g + '-rr', 'g' + g + '-gift']))
+    .forEach((id) => $(id).addEventListener('input', calc));
+  // Typing over a rate or gift turns the assumption into a custom one.
+  ['p-rr', 'p-gift'].concat(...GROUPS.map((g) => ['g' + g + '-rr', 'g' + g + '-gift'])).forEach((id) => $(id).addEventListener('input', () => {
+    sb.forEach((x) => x.setAttribute('aria-pressed', 'false'));
+    $('scen-hint').textContent = 'Custom rates (edited by hand). Pick an assumption or a month to reset them.';
+  }));
+  pros = pb[0];
+  pb.forEach((b, i) => b.setAttribute('aria-pressed', String(i === 0)));
+  applyScen();
+  calc();
+
+  // ── Text calculator ─────────────────────────────────────────────
+  // Prospect numbers (a VAN-flagged cell, one per number, not a DPVA donor's number), 25 equal bins
+  // per band, average DonorProb, highest first (sql/playbook_queries.sql ##text, 2026-10-24).
+  const TCURVE = {
+    A: [.748094,.627147,.568794,.528762,.499184,.474409,.452999,.433936,.417322,.402065,.388273,.375491,.363719,.352396,.341802,.332204,.323041,.314575,.306556,.298913,.291608,.284603,.277967,.271635,.265482].map((p) => [2748, p]),
+    B: [.258391,.250487,.242958,.235869,.229073,.222548,.216396,.210619,.205023,.199610,.194399,.189488,.184680,.180023,.175509,.171278,.167173,.163156,.159265,.155508,.151907,.148448,.145059,.141733,.138577].map((p) => [3884, p]),
+  };
+  TCURVE.AB = TCURVE.A.concat(TCURVE.B);
+  // Top-10% DPVA donor numbers by group bits, the same bits as MASKS (##text).
+  const TMASKS = { 1: 1698, 2: 2023, 3: 3, 4: 8472, 5: 8, 6: 9, 9: 216, 10: 233, 11: 2, 12: 241, 13: 3, 14: 5 };
+  // Text assumptions, judgment, not measured. Prospects: [click-through %, give rate of clicks %, gift $].
+  // Donors: [gave % of numbers texted, gift $]. Text gifts run smaller than mail gifts.
+  const TSCEN = {
+    cons: { A: [1.5, 8, 18],  B: [1.2, 6, 16], AB: [1.3, 7, 17],  t8: [1.5, 40], t1: [3, 35], t2: [1.5, 30], t4: [0.7, 28] },
+    exp:  { A: [2.5, 10, 22], B: [2, 8, 20],   AB: [2.2, 9, 21],  t8: [2.5, 50], t1: [5, 40], t2: [2.5, 35], t4: [1.2, 30] },
+    opt:  { A: [3.5, 12, 25], B: [2.8, 10, 22], AB: [3.1, 11, 24], t8: [3.5, 60], t1: [7, 45], t2: [3.5, 40], t4: [1.8, 35] },
+  };
+  let tpros = null, tFull = true, tscen = 'exp', tIdCol = 'VANID', txName = 'text_list.sql';
+  function tsplit(sel) {
+    const by = { 8: 0, 1: 0, 2: 0, 4: 0 };
+    for (const [m, n] of Object.entries(TMASKS)) { const g = GROUPS.find((x) => +m & x & sel); if (g) by[g] += n; }
+    return by;
+  }
+  function tcalc() {
+    const perNum = val('t-cpm') * Math.max(1, Math.round(val('t-msgs')));
+    const msgs = Math.max(1, Math.round(val('t-msgs')));
+    const dlv = Math.min(100, val('t-dlv')) / 100, opt = Math.min(100, val('t-opt')) / 100;
+    const skip = $('t-skip').checked, overlap = +tpros.dataset.overlap;
+    $('t-overlap-n').textContent = int.format(overlap);
+    const avail = +tpros.dataset.n - (skip ? overlap : 0);
+    $('t-avail').textContent = int.format(avail);
+    $('t-range').max = avail; $('t-n').max = avail;
+    if (tFull || val('t-n') > avail) $('t-n').value = avail;
+    const n = Math.min(val('t-n'), avail);
+    $('t-range').value = n;
+    const lf = avail > 0 && n > 0 ? lift(TCURVE[tpros.dataset.curve], n / avail) : 1;
+    const ctr = Math.min(100, val('t-ctr') * lf);
+    const rr = dlv * ctr / 100 * val('t-give') / 100;
+    $('t-rr-adj').textContent = (rr * 100).toFixed(2) + '%';
+    $('t-lift').textContent = lf > 1.005 ? '(click-through ' + lf.toFixed(2) + '× the full-list rate)' : '(full list)';
+    const p = { hh: n, cost: n * perNum, gifts: n * rr };
+    p.gross = p.gifts * val('t-gift'); p.net = p.gross - p.cost;
+    const on = GROUPS.filter((g) => $('t' + g + '-on').checked), sel = on.reduce((s, g) => s | g, 0), by = tsplit(sel);
+    GROUPS.forEach((g) => { $('t' + g + '-n').textContent = int.format(tsplit(sel | g)[g]); });
+    const d = { hh: 0, gifts: 0, gross: 0, sel, by };
+    for (const g of on) { const gi = by[g] * val('t' + g + '-rr') / 100; d.hh += by[g]; d.gifts += gi; d.gross += gi * val('t' + g + '-gift'); }
+    d.cost = d.hh * perNum; d.net = d.gross - d.cost;
+    $('t-d-sel').textContent = int.format(d.hh);
+    const t = { hh: p.hh + d.hh, cost: p.cost + d.cost, gifts: p.gifts + d.gifts, gross: p.gross + d.gross, net: p.net + d.net };
+    put('tr-p', p); put('tr-d', d); put('tr-t', t);
+    const nd = p.gifts, after = p.net + Math.max(0, d.net);
+    $('to-cpnd').textContent = nd > 0 ? (p.net >= 0 ? 'Pays for itself' : usd2.format(-p.net / nd)) : '—';
+    $('to-cpnd2').textContent = nd > 0 ? (after >= 0 ? 'Pays for itself' : usd2.format(-after / nd)) : '—';
+    $('to-msgs').textContent = int.format(Math.round(t.hh * msgs));
+    $('to-lost').textContent = int.format(Math.round(t.hh * dlv * (1 - Math.pow(1 - opt, msgs))));
+    tbuildExport(n, skip, d);
+  }
+
+  // Export: T-SQL for this selection on INSTANCE-1. Textable number = the first of CellPhone,
+  // PreferredPhone, HomePhone that VAN flags Verified / Likely Cell; one row per number.
+  function tbuildExport(n, skip, d) {
+    const [lo, hi, band] = BANDS[tpros.dataset.curve];
+    const now = new Date(), p2 = (x) => String(x).padStart(2, '0');
+    const today = now.getFullYear() + '-' + p2(now.getMonth() + 1) + '-' + p2(now.getDate());
+    const hms = p2(now.getHours()) + p2(now.getMinutes()) + p2(now.getSeconds());
+    const stamp = now.toLocaleTimeString('en-US');
+    const groups = GROUPS.filter((g) => d.sel & g);
+    const gtxt = groups.length ? groups.map((g) => GROUP_NAME[g] + ' (' + int.format(d.by[g]) + ')').join(', ') : 'none';
+    txName = 'text_list_' + band + '_' + n + 'num' + (groups.length ? '_donors-g' + groups.join('g') : '') + '_' + today + '_' + hms + '.sql';
+    $('tx-sum').textContent = int.format(n) + ' prospect numbers (score ' + band + ') + ' + int.format(d.hh) + ' DPVA donor numbers, by ' + tIdCol + '. Query built ' + stamp + '.';
+    const isCell = (c) => `v.${c}IsCell IN ('Verified Cell','Likely Cell') AND ISNULL(v.${c},'') <> ''`;
+    $('tx-sql').value = `-- DPVA donor-score text list. Built by the playbook calculator on ${today} at ${stamp}.
+-- Columns: ${tIdCol}, FirstName, LastName, Phone, Segment, DonorScore, TestGroup.
+-- Prospects: score ${band}, top ${n} numbers by DonorProb${skip ? ', skipping numbers that belong to a DPVA donor' : ''}.
+-- DPVA donors (top 10%): ${gtxt}.
+-- Expected rows: ${n + d.hh} (${n} prospect + ${d.hh} donor numbers), against the 2026-10-20 score build.
+-- Phone: the first of CellPhone, PreferredPhone, HomePhone that VAN flags Verified or Likely Cell.
+-- One row per number. TestGroup marks the same fixed 10% Control as the mail export.
+-- VAN data (Voter File Swap Agreement): keep on DPVA systems.
+SET NOCOUNT ON;
+DECLARE @MinScore int = ${lo}, @MaxScore int = ${hi};
+DECLARE @ProspectNumbers int = ${n};
+DECLARE @SkipDonorNumbers bit = ${skip ? 1 : 0};
+DECLARE @Groups int = ${d.sel};   -- 8 gave by mail, 1 gave 2025-26, 2 last gave 2022-24, 4 lapsed before 2022 (summed)
+
+-- DPVA's own donors: matched ActBlue and NGP gifts, with each voter's last gift
+IF OBJECT_ID('tempdb..#own') IS NOT NULL DROP TABLE #own;
+SELECT a.Identification_Number AS StateFileID, MAX(a.ContributionDate) AS LastGift
+INTO #own
+FROM Finance.dbo.ALL_CONTRIBUTIONS a
+WHERE a.Source IN ('AB','NGP') AND a.Identification_Number <> '' AND a.Amount > 0
+GROUP BY a.Identification_Number;
+
+-- past mail donors: NGP gifts under DPVA direct-mail source codes (D4D and Victory Fund left out)
+IF OBJECT_ID('tempdb..#mail') IS NOT NULL DROP TABLE #mail;
+SELECT DISTINCT TRY_CAST(NULLIF(n.VanID_VB,'') AS bigint) AS VANID
+INTO #mail
+FROM Finance.dbo.NGP_WORK n
+WHERE TRY_CAST(NULLIF(n.VanID_VB,'') AS bigint) IS NOT NULL
+  AND n.SourceCode IN ('07 TK Mail', '08 Webb MP', '09_1DM', '09_2DM', '10_Mem', '11_TheyWin', '15_DM', '2000 dm10', '2000 dm2',
+    '2000 dm6', '2000 dm7', '2000 dm8', '2024_Swecker', '23_Inc_Mail_22Mailer', '98 CSR DM', '98 EVL DM', '98 Ldr DM', '99 mbr dm',
+    'cc2000DM1', 'Core_Inc_Mail_24HWK', 'Core_Inc_Mail_24OctoberSwecker', 'Core_Inc_Mail_25Bagby', 'Dm 01', 'Dm 01 B', 'DM 01 C',
+    'DM 01 E', 'DM 02 A', 'DM 02 C', 'DM 03 A', 'DM 03 B', 'DM 04 A', 'DM 04 C', 'DM 04 D', 'DM 05 A', 'DM 05 B', 'DM0606', 'DM0608', 'Dm1');
+
+-- top-10% voters with a textable number
+IF OBJECT_ID('tempdb..#t') IS NOT NULL DROP TABLE #t;
+SELECT s.VANID, v.StateFileID, v.FirstName, v.LastName, s.DonorScore, s.DonorProb, o.LastGift,
+       CAST(CASE WHEN ${isCell('CellPhone')} THEN v.CellPhone
+                 WHEN ${isCell('PreferredPhone')} THEN v.PreferredPhone
+                 WHEN ${isCell('HomePhone')} THEN v.HomePhone END AS varchar(20)) AS Phone,
+       CASE WHEN o.LastGift >= '2025-01-01' THEN 1 WHEN o.LastGift >= '2022-01-01' THEN 2 WHEN o.LastGift IS NOT NULL THEN 4 END AS Grp,
+       CASE WHEN d.VANID IS NULL THEN 1 ELSE 0 END AS NoGift,
+       CASE WHEN ml.VANID IS NOT NULL THEN 1 ELSE 0 END AS Mail
+INTO #t
+FROM Finance.dbo.VOTER_DONOR_SCORES s
+JOIN Voter.dbo.Van v ON v.VoterFileVANID = s.VANID AND v.State = 'VA'
+LEFT JOIN #own o ON o.StateFileID = v.StateFileID
+LEFT JOIN Finance.dbo.VA_DONORS d ON d.VANID = s.VANID
+LEFT JOIN #mail ml ON ml.VANID = TRY_CAST(s.VANID AS bigint)
+WHERE s.DonorScore > 90;
+DELETE FROM #t WHERE Phone IS NULL;
+CREATE CLUSTERED INDEX ix ON #t (Phone);
+
+IF OBJECT_ID('tempdb..#dphone') IS NOT NULL DROP TABLE #dphone;
+SELECT DISTINCT Phone INTO #dphone FROM #t WHERE Grp IS NOT NULL;
+CREATE UNIQUE CLUSTERED INDEX ix ON #dphone (Phone);
+
+-- prospects (no matched gift anywhere): one voter per number, highest DonorProb
+IF OBJECT_ID('tempdb..#p') IS NOT NULL DROP TABLE #p;
+SELECT VANID, StateFileID, FirstName, LastName, Phone, DonorScore, DonorProb
+INTO #p
+FROM (SELECT t.*, ROW_NUMBER() OVER (PARTITION BY t.Phone ORDER BY t.DonorProb DESC, t.VANID) AS rn
+      FROM #t t
+      WHERE t.NoGift = 1 AND t.DonorScore BETWEEN @MinScore AND @MaxScore
+        AND (@SkipDonorNumbers = 0 OR NOT EXISTS (SELECT 1 FROM #dphone h WHERE h.Phone = t.Phone))) x
+WHERE rn = 1;
+
+-- DPVA donors: one per number. A past mail donor claims the number first (when that group is picked),
+-- then the most recent selected group. R: 0 = mail, else the group bit.
+IF OBJECT_ID('tempdb..#d') IS NOT NULL DROP TABLE #d;
+SELECT VANID, StateFileID, FirstName, LastName, Phone, DonorScore, R
+INTO #d
+FROM (SELECT y.*, ROW_NUMBER() OVER (PARTITION BY y.Phone ORDER BY y.R, y.LastGift DESC, y.DonorProb DESC, y.VANID) AS rn
+      FROM (SELECT t.*, CASE WHEN t.Mail = 1 AND @Groups & 8 > 0 THEN 0 WHEN t.Grp & @Groups > 0 THEN t.Grp END AS R
+            FROM #t t WHERE t.Grp IS NOT NULL) y
+      WHERE y.R IS NOT NULL) x
+WHERE rn = 1;
+
+SELECT x.${tIdCol}, x.FirstName, x.LastName, x.Phone, x.Segment, x.DonorScore,
+       CASE WHEN ABS(CHECKSUM(CAST(x.VANID AS varchar(20)) + '|holdout')) % 10 = 0 THEN 'Control' ELSE 'Text' END AS TestGroup
+FROM (SELECT 'Prospect ${band}' AS Segment, VANID, StateFileID, FirstName, LastName, Phone, DonorScore
+      FROM (SELECT TOP (@ProspectNumbers) * FROM #p ORDER BY DonorProb DESC, VANID) t
+      UNION ALL
+      SELECT CASE R WHEN 0 THEN 'Donor gave by mail' WHEN 1 THEN 'Donor gave 2025-26' WHEN 2 THEN 'Donor last gave 2022-24' ELSE 'Donor lapsed before 2022' END,
+             VANID, StateFileID, FirstName, LastName, Phone, DonorScore
+      FROM #d) x
+ORDER BY x.Segment, x.DonorScore DESC;
+`;
+  }
+  const tib = $('t-id-pick').querySelectorAll('button');
+  tib.forEach((b) => b.addEventListener('click', () => { tIdCol = b.dataset.id; tib.forEach((x) => x.setAttribute('aria-pressed', String(x === b))); $('tx-msg').textContent = ''; tcalc(); }));
+  $('tx-dl').addEventListener('click', () => saveSql($('tx-sql').value, txName, $('tx-msg')));
+  $('tx-copy').addEventListener('click', () => {
+    const t = $('tx-sql'), done = () => { $('tx-msg').textContent = 'Query copied. Paste it into SSMS on INSTANCE-1 and run it.'; };
+    const fallback = () => {
+      t.closest('details').open = true; t.focus(); t.select();
+      try { if (document.execCommand('copy')) return done(); } catch (e) { /* fall through */ }
+      $('tx-msg').textContent = 'Copy is blocked here. The query is selected below: press Ctrl+C.';
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t.value).then(done, fallback); else fallback();
+  });
+  function tgroup(id, onPick) {
+    const btns = $(id).querySelectorAll('button');
+    btns.forEach((b) => b.addEventListener('click', () => { btns.forEach((x) => x.setAttribute('aria-pressed', String(x === b))); onPick(b); tcalc(); }));
+    return btns;
+  }
+  function tSetProspectRates() { const r = TSCEN[tscen][tpros.dataset.curve]; $('t-ctr').value = r[0]; $('t-give').value = r[1]; $('t-gift').value = r[2]; }
+  function tApplyScen() {
+    tSetProspectRates();
+    GROUPS.forEach((g) => { const r = TSCEN[tscen]['t' + g]; $('t' + g + '-rr').value = r[0]; $('t' + g + '-gift').value = r[1]; });
+    tsb.forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.scen === tscen)));
+    const m = $('t-month').value;
+    $('t-scen-hint').textContent = m === ''
+      ? SCEN_NAME[tscen] + ' rates. Pick a send month to use the month guide instead.'
+      : MONTH_FULL[m] + ': DPVA donors give ' + SEASON[m].toFixed(2) + '× an average month, so the guide uses ' + SCEN_NAME[tscen].toLowerCase() + ' rates.';
+  }
+  const tpb = tgroup('t-pros-pick', (b) => { tpros = b; tFull = true; tSetProspectRates(); });
+  const tsb = tgroup('t-scen-pick', (b) => { tscen = b.dataset.scen; $('t-month').value = ''; tApplyScen(); });
+  $('t-month').addEventListener('change', () => { const m = $('t-month').value; if (m !== '') tscen = monthScen(SEASON[m]); tApplyScen(); tcalc(); });
+  $('t-n').addEventListener('input', () => { tFull = val('t-n') >= +$('t-n').max; tcalc(); });
+  $('t-range').addEventListener('input', () => { $('t-n').value = $('t-range').value; tFull = val('t-n') >= +$('t-range').max; tcalc(); });
+  const tRates = ['t-ctr', 't-give', 't-gift'].concat(...GROUPS.map((g) => ['t' + g + '-rr', 't' + g + '-gift']));
+  ['t-cpm', 't-msgs', 't-dlv', 't-opt', 't-skip'].concat(tRates, GROUPS.map((g) => 't' + g + '-on'))
+    .forEach((id) => $(id).addEventListener('input', tcalc));
+  tRates.forEach((id) => $(id).addEventListener('input', () => {
+    tsb.forEach((x) => x.setAttribute('aria-pressed', 'false'));
+    $('t-scen-hint').textContent = 'Custom rates (edited by hand). Pick an assumption or a month to reset them.';
+  }));
+  tpros = tpb[0];
+  tpb.forEach((b, i) => b.setAttribute('aria-pressed', String(i === 0)));
+  tApplyScen();
+  tcalc();
+})();
+</script>
+
+</body>
+</html>

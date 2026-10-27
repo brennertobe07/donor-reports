@@ -1,0 +1,651 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Donor Score Breakdown</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<style>
+  /* DPVA dark theme mapped onto the dashboard's tokens */
+  :root {
+    color-scheme: dark;
+    --color-bg: #0f1117; --color-panel: #1a1d27; --color-border-line: #2a2d3a;
+    --color-fg: #e8eaf0; --color-fg-muted: #8890a8; --color-bad: #d24a3c; --color-ok: #2fb36b; --color-warn: #f0a500;
+    --cds-chart-muted: #3a4058; --cds-chart-grid: #232736; --cds-chart-axis: #353a50;
+    --cds-surface-popover: #20243a; --cds-border: #353a50; --cds-shadow-popover: 0 6px 20px rgba(0,0,0,.45); --cds-text-secondary: #8890a8;
+    --font-anthropic-sans: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-anthropic-serif: 'DM Serif Display', Georgia, serif;
+    --cds-font-size-caption: 0.8rem; --cds-font-size-body: 0.95rem; --cds-font-size-heading: 1.15rem; --cds-font-size-title: 1.9rem;
+    --cds-font-weight-medium: 600;
+    --cds-gap-xs: 4px; --cds-gap-sm: 8px; --cds-gap-md: 14px; --cds-gap-lg: 20px; --cds-gap-xl: 32px;
+    --cds-pad-xs: 4px; --cds-pad-sm: 8px; --cds-pad-md: 12px; --cds-pad-lg: 16px;
+    --cds-radius: 6px; --cds-dur-slow: 300ms;
+  }
+  body { margin: 0; background: var(--color-bg); color: var(--color-fg); font-family: var(--font-anthropic-sans); font-size: 15px; line-height: 1.5; }
+  #dash-root { padding: 28px max(16px, env(safe-area-inset-left, 0px)) 56px; }
+  .snapshot { max-width: 76rem; margin: 0 auto 16px; color: var(--color-fg-muted); font-size: 0.8rem; }
+</style>
+</head>
+<body>
+<div id="dash-root">
+<p class="snapshot">Numbers are the 2026-10-20 build.</p>
+<script>
+/* Stand-in for the claude.ai dashboard's `dash` object: serves the built-in CSVs. */
+(function () {
+  const DATA = {"cd": [{"cd": "CD 1", "voters": "641681", "donors": "33757", "prospects": "50545", "fed_prospects": "50477", "state_prospects": "76466", "textable": "19626"}, {"cd": "CD 2", "voters": "606976", "donors": "21932", "prospects": "29613", "fed_prospects": "31065", "state_prospects": "41043", "textable": "12422"}, {"cd": "CD 3", "voters": "539948", "donors": "18420", "prospects": "25786", "fed_prospects": "25281", "state_prospects": "33222", "textable": "11234"}, {"cd": "CD 4", "voters": "582632", "donors": "26562", "prospects": "37965", "fed_prospects": "37222", "state_prospects": "55236", "textable": "15768"}, {"cd": "CD 5", "voters": "622701", "donors": "24854", "prospects": "34878", "fed_prospects": "36212", "state_prospects": "46997", "textable": "12677"}, {"cd": "CD 6", "voters": "582275", "donors": "20160", "prospects": "29237", "fed_prospects": "31072", "state_prospects": "36810", "textable": "10308"}, {"cd": "CD 7", "voters": "591628", "donors": "22264", "prospects": "31588", "fed_prospects": "32704", "state_prospects": "38718", "textable": "13581"}, {"cd": "CD 8", "voters": "561491", "donors": "55336", "prospects": "83534", "fed_prospects": "90531", "state_prospects": "90786", "textable": "32959"}, {"cd": "CD 9", "voters": "578456", "donors": "11940", "prospects": "16871", "fed_prospects": "17811", "state_prospects": "19659", "textable": "5727"}, {"cd": "CD 10", "voters": "576365", "donors": "29574", "prospects": "43225", "fed_prospects": "45931", "state_prospects": "50233", "textable": "19340"}, {"cd": "CD 11", "voters": "579554", "donors": "42767", "prospects": "63717", "fed_prospects": "69300", "state_prospects": "70943", "textable": "26698"}], "county": [{"locality": "Fairfax", "voters": "820857", "donors": "62618", "prospects": "93017", "top10": "136363", "textable": "38764"}, {"locality": "Arlington", "voters": "186370", "donors": "20328", "prospects": "30610", "top10": "46180", "textable": "11754"}, {"locality": "Loudoun", "voters": "313627", "donors": "17738", "prospects": "25902", "top10": "36780", "textable": "11688"}, {"locality": "Chesterfield", "voters": "289535", "donors": "14384", "prospects": "21797", "top10": "30828", "textable": "8383"}, {"locality": "Henrico", "voters": "254985", "donors": "14639", "prospects": "21789", "top10": "31282", "textable": "9535"}, {"locality": "Prince William", "voters": "335493", "donors": "14486", "prospects": "21768", "top10": "30266", "textable": "9821"}, {"locality": "Alexandria (City)", "voters": "118366", "donors": "13126", "prospects": "20286", "top10": "30460", "textable": "7775"}, {"locality": "Richmond (City)", "voters": "168143", "donors": "13138", "prospects": "19534", "top10": "28866", "textable": "7753"}, {"locality": "Virginia Beach (City)", "voters": "343011", "donors": "13331", "prospects": "18135", "top10": "25609", "textable": "7463"}, {"locality": "Albemarle", "voters": "90954", "donors": "8762", "prospects": "13298", "top10": "20168", "textable": "4827"}, {"locality": "Chesapeake (City)", "voters": "188700", "donors": "6506", "prospects": "9001", "top10": "12288", "textable": "4090"}, {"locality": "Norfolk (City)", "voters": "148990", "donors": "6184", "prospects": "8972", "top10": "12706", "textable": "3568"}, {"locality": "James City", "voters": "67001", "donors": "4641", "prospects": "6984", "top10": "10312", "textable": "2361"}, {"locality": "Stafford", "voters": "120236", "donors": "4539", "prospects": "6727", "top10": "9410", "textable": "3033"}, {"locality": "Charlottesville (City)", "voters": "36439", "donors": "3724", "prospects": "5696", "top10": "8733", "textable": "2066"}, {"locality": "Newport News (City)", "voters": "127757", "donors": "3964", "prospects": "5625", "top10": "7716", "textable": "2489"}, {"locality": "Hanover", "voters": "90663", "donors": "3882", "prospects": "5479", "top10": "7813", "textable": "2263"}, {"locality": "Spotsylvania", "voters": "115189", "donors": "3868", "prospects": "5263", "top10": "7496", "textable": "2214"}, {"locality": "Hampton (City)", "voters": "103961", "donors": "3582", "prospects": "5077", "top10": "6961", "textable": "2312"}, {"locality": "Roanoke (City)", "voters": "68628", "donors": "3332", "prospects": "4922", "top10": "7130", "textable": "1745"}], "deciles": [{"model": "Any Dem donor", "decile": "1", "voters": "646371", "donors": "449"}, {"model": "Any Dem donor", "decile": "2", "voters": "646371", "donors": "1026"}, {"model": "Any Dem donor", "decile": "3", "voters": "646371", "donors": "1731"}, {"model": "Any Dem donor", "decile": "4", "voters": "646371", "donors": "2818"}, {"model": "Any Dem donor", "decile": "5", "voters": "646372", "donors": "4518"}, {"model": "Any Dem donor", "decile": "6", "voters": "646371", "donors": "7371"}, {"model": "Any Dem donor", "decile": "7", "voters": "646371", "donors": "12133"}, {"model": "Any Dem donor", "decile": "8", "voters": "646371", "donors": "23331"}, {"model": "Any Dem donor", "decile": "9", "voters": "646371", "donors": "54776"}, {"model": "Any Dem donor", "decile": "10", "voters": "646372", "donors": "199413"}, {"model": "Federal", "decile": "1", "voters": "646371", "donors": "269"}, {"model": "Federal", "decile": "2", "voters": "646371", "donors": "662"}, {"model": "Federal", "decile": "3", "voters": "646371", "donors": "1140"}, {"model": "Federal", "decile": "4", "voters": "646371", "donors": "1834"}, {"model": "Federal", "decile": "5", "voters": "646372", "donors": "3001"}, {"model": "Federal", "decile": "6", "voters": "646371", "donors": "4984"}, {"model": "Federal", "decile": "7", "voters": "646371", "donors": "9017"}, {"model": "Federal", "decile": "8", "voters": "646372", "donors": "18224"}, {"model": "Federal", "decile": "9", "voters": "646370", "donors": "46724"}, {"model": "Federal", "decile": "10", "voters": "646372", "donors": "178766"}, {"model": "State/local", "decile": "1", "voters": "646371", "donors": "86"}, {"model": "State/local", "decile": "2", "voters": "646371", "donors": "225"}, {"model": "State/local", "decile": "3", "voters": "646371", "donors": "441"}, {"model": "State/local", "decile": "4", "voters": "646371", "donors": "683"}, {"model": "State/local", "decile": "5", "voters": "646372", "donors": "1186"}, {"model": "State/local", "decile": "6", "voters": "646371", "donors": "2010"}, {"model": "State/local", "decile": "7", "voters": "646371", "donors": "3463"}, {"model": "State/local", "decile": "8", "voters": "646371", "donors": "6499"}, {"model": "State/local", "decile": "9", "voters": "646371", "donors": "14776"}, {"model": "State/local", "decile": "10", "voters": "646372", "donors": "86259"}], "dm_source_codes": [{"count": "160", "SourceCode": "04 D4D", "SourceCodeDescription": "D4D memo entries"}, {"count": "36", "SourceCode": "04 Victory", "SourceCodeDescription": "2004 Victory Fund"}, {"count": "78", "SourceCode": "05 D4D", "SourceCodeDescription": "2005 D4D Memo Entries"}, {"count": "178", "SourceCode": "06 D4D", "SourceCodeDescription": "2006 Dollars for Democrats"}, {"count": "41", "SourceCode": "06 Victory", "SourceCodeDescription": "2006 Victory Fund"}, {"count": "219", "SourceCode": "07 D4D", "SourceCodeDescription": "2007 D4D"}, {"count": "184", "SourceCode": "07 TK Mail", "SourceCodeDescription": "07 T Kaine Mailing Sept 2007"}, {"count": "41", "SourceCode": "07 Victory", "SourceCodeDescription": "2007 DNC Victory Fund"}, {"count": "73", "SourceCode": "08 D4D", "SourceCodeDescription": "2008 Dollars for Democrats"}, {"count": "26", "SourceCode": "08 Victory", "SourceCodeDescription": "2008 DNC Victory Fund Allocation"}, {"count": "262", "SourceCode": "08 Webb MP", "SourceCodeDescription": "08 Webb Mail Piece"}, {"count": "80", "SourceCode": "09 D4D", "SourceCodeDescription": "2009 Dollars for Dems"}, {"count": "43", "SourceCode": "09 DNCVIC", "SourceCodeDescription": "09 DNC State Party Victory Fund"}, {"count": "171", "SourceCode": "09 Dol4Dem", "SourceCodeDescription": "2009 Dollars for Democrats"}, {"count": "32", "SourceCode": "09 HseMail", "SourceCodeDescription": "09 House Mailings"}, {"count": "309", "SourceCode": "09 Victory", "SourceCodeDescription": "2009 DNC Victory Fund"}, {"count": "436", "SourceCode": "09_1DM", "SourceCodeDescription": "09 March Direct Mail"}, {"count": "133", "SourceCode": "09_2DM", "SourceCodeDescription": "October Direct Mail"}, {"count": "350", "SourceCode": "10_D4D", "SourceCodeDescription": "Dollars for Democrats"}, {"count": "421", "SourceCode": "10_Mem", "SourceCodeDescription": "2010 Membership Mailer"}, {"count": "177", "SourceCode": "10_Victory", "SourceCodeDescription": "DNC Victory Fund"}, {"count": "295", "SourceCode": "11_D4D", "SourceCodeDescription": "2011 Dollars for Democrats"}, {"count": "345", "SourceCode": "11_TheyWin", "SourceCodeDescription": "They Win Direct Mail"}, {"count": "322", "SourceCode": "11_Victory", "SourceCodeDescription": "2011 DNC Victory Fund"}, {"count": "486", "SourceCode": "12_D4D", "SourceCodeDescription": "2012 Dollars for Dems"}, {"count": "406", "SourceCode": "12_DNC_VF", "SourceCodeDescription": "2012 DNC Victory Fund"}, {"count": "412", "SourceCode": "12_Vic2012", "SourceCodeDescription": "Victory 2012"}, {"count": "50", "SourceCode": "12_Vict12", "SourceCodeDescription": "2012 Victory 2012 Exp"}, {"count": "157", "SourceCode": "13_D4D", "SourceCodeDescription": "13_Dollars for Democrats"}, {"count": "200", "SourceCode": "13_DNC_VF", "SourceCodeDescription": "2013 DNC Victory Fund"}, {"count": "1310", "SourceCode": "14_D4D", "SourceCodeDescription": "14_Dollars for Democrats"}, {"count": "3094", "SourceCode": "15_D4D", "SourceCodeDescription": "2014 Dollars for Democrats Memos"}, {"count": "120", "SourceCode": "15_DM", "SourceCodeDescription": "2015 Direct Mail Program"}, {"count": "87", "SourceCode": "2000 dm10", "SourceCodeDescription": "2000 dm10"}, {"count": "156", "SourceCode": "2000 dm2", "SourceCodeDescription": "2000 dm2"}, {"count": "115", "SourceCode": "2000 dm6", "SourceCodeDescription": "2000 dm6"}, {"count": "117", "SourceCode": "2000 dm7", "SourceCodeDescription": "2000 dm7"}, {"count": "63", "SourceCode": "2000 dm8", "SourceCodeDescription": "2000 dm8"}, {"count": "359", "SourceCode": "2024_Swecker", "SourceCodeDescription": "Spring and summer 2024 mailer with Susan Swecker as signer"}, {"count": "428", "SourceCode": "23_Inc_Mail_22Mailer", "SourceCodeDescription": "Non-Actblue Income from DPVA run direct mail efforts"}, {"count": "55", "SourceCode": "98 CSR DM", "SourceCodeDescription": "98 CSR DM"}, {"count": "37", "SourceCode": "98 EVL DM", "SourceCodeDescription": "98 EVL DM"}, {"count": "48", "SourceCode": "98 Ldr DM", "SourceCodeDescription": "98 Ldr DM"}, {"count": "174", "SourceCode": "99 mbr dm", "SourceCodeDescription": "99 mbr dm"}, {"count": "61", "SourceCode": "cc2000DM1", "SourceCodeDescription": "cc2000DM1"}, {"count": "265", "SourceCode": "Core_Inc_Mail_24HWK", "SourceCodeDescription": "2024 Harris Walz Kaine direct mailer."}, {"count": "147", "SourceCode": "Core_Inc_Mail_24OctoberSwecker", "SourceCodeDescription": "2024 October Swecker Mailer"}, {"count": "288", "SourceCode": "Core_Inc_Mail_25Bagby", "SourceCodeDescription": "First Bagby direct mailer."}, {"count": "47", "SourceCode": "Dm 01", "SourceCodeDescription": "Dm 01"}, {"count": "119", "SourceCode": "Dm 01 B", "SourceCodeDescription": "Dm 01 B"}, {"count": "91", "SourceCode": "DM 01 C", "SourceCodeDescription": "DM 01 C"}, {"count": "42", "SourceCode": "DM 01 E", "SourceCodeDescription": "DM 01 E"}, {"count": "127", "SourceCode": "DM 02 A", "SourceCodeDescription": "DM 02 A"}, {"count": "65", "SourceCode": "DM 02 C", "SourceCodeDescription": "DM 02 C"}, {"count": "174", "SourceCode": "DM 03 A", "SourceCodeDescription": "Party Direct Mail A  -  1st mailing"}, {"count": "66", "SourceCode": "DM 03 B", "SourceCodeDescription": "Direct Mail B"}, {"count": "247", "SourceCode": "DM 04 A", "SourceCodeDescription": "Direct Mail A"}, {"count": "115", "SourceCode": "DM 04 C", "SourceCodeDescription": "Direct Mail C"}, {"count": "64", "SourceCode": "DM 04 D", "SourceCodeDescription": "Direct Mail D"}, {"count": "205", "SourceCode": "DM 05 A", "SourceCodeDescription": "Direct Mail 2005 A"}, {"count": "137", "SourceCode": "DM 05 B", "SourceCodeDescription": "DM 05B"}, {"count": "260", "SourceCode": "DM0606", "SourceCodeDescription": "DM0606State"}, {"count": "37", "SourceCode": "DM0608", "SourceCodeDescription": "DM0608 Kaine"}, {"count": "133", "SourceCode": "Dm1", "SourceCodeDescription": "Dm1"}], "giving": [{"decile": "1", "donors": "443", "avg_total": "333", "sum_total": "147363", "avg_gifts": "5.3"}, {"decile": "2", "donors": "1018", "avg_total": "418", "sum_total": "425449", "avg_gifts": "6.8"}, {"decile": "3", "donors": "1719", "avg_total": "723", "sum_total": "1242510", "avg_gifts": "7.2"}, {"decile": "4", "donors": "2802", "avg_total": "1120", "sum_total": "3137373", "avg_gifts": "7.1"}, {"decile": "5", "donors": "4497", "avg_total": "2371", "sum_total": "10664280", "avg_gifts": "8.6"}, {"decile": "6", "donors": "7349", "avg_total": "1405", "sum_total": "10326813", "avg_gifts": "9.0"}, {"decile": "7", "donors": "12108", "avg_total": "1542", "sum_total": "18674438", "avg_gifts": "9.1"}, {"decile": "8", "donors": "23316", "avg_total": "2305", "sum_total": "53746855", "avg_gifts": "9.4"}, {"decile": "9", "donors": "54766", "avg_total": "1178", "sum_total": "64540232", "avg_gifts": "8.9"}, {"decile": "10", "donors": "199413", "avg_total": "2179", "sum_total": "434465617", "avg_gifts": "23.9"}], "mail_bands": [{"era": "1998-2015", "band": "Under $25", "band_order": "1", "gifts": "529", "dollars": "7320"}, {"era": "1998-2015", "band": "$25-49", "band_order": "2", "gifts": "1860", "dollars": "53524"}, {"era": "1998-2015", "band": "$50-99", "band_order": "3", "gifts": "1237", "dollars": "63582"}, {"era": "1998-2015", "band": "$100-249", "band_order": "4", "gifts": "926", "dollars": "102204"}, {"era": "1998-2015", "band": "$250-999", "band_order": "5", "gifts": "167", "dollars": "50350"}, {"era": "1998-2015", "band": "$1,000+", "band_order": "6", "gifts": "24", "dollars": "48717"}, {"era": "2022-25", "band": "Under $25", "band_order": "1", "gifts": "119", "dollars": "1715"}, {"era": "2022-25", "band": "$25-49", "band_order": "2", "gifts": "340", "dollars": "9132"}, {"era": "2022-25", "band": "$50-99", "band_order": "3", "gifts": "390", "dollars": "20096"}, {"era": "2022-25", "band": "$100-249", "band_order": "4", "gifts": "470", "dollars": "53796"}, {"era": "2022-25", "band": "$250-999", "band_order": "5", "gifts": "149", "dollars": "45404"}, {"era": "2022-25", "band": "$1,000+", "band_order": "6", "gifts": "19", "dollars": "32500"}], "mail_drops": [{"drop_code": "98 Ldr DM", "first_gift": "1998-04-08", "gifts": "48", "donors": "48", "avg_gift": "94", "dollars": "4534", "era": "1998-2015"}, {"drop_code": "98 EVL DM", "first_gift": "1998-05-29", "gifts": "37", "donors": "36", "avg_gift": "72", "dollars": "2656", "era": "1998-2015"}, {"drop_code": "98 CSR DM", "first_gift": "1998-08-05", "gifts": "55", "donors": "54", "avg_gift": "57", "dollars": "3137", "era": "1998-2015"}, {"drop_code": "99 mbr dm", "first_gift": "1999-03-19", "gifts": "174", "donors": "174", "avg_gift": "51", "dollars": "8942", "era": "1998-2015"}, {"drop_code": "2000 dm10", "first_gift": "2000-01-03", "gifts": "87", "donors": "86", "avg_gift": "102", "dollars": "8886", "era": "1998-2015"}, {"drop_code": "2000 dm2", "first_gift": "2000-07-10", "gifts": "156", "donors": "155", "avg_gift": "54", "dollars": "8375", "era": "1998-2015"}, {"drop_code": "2000 dm6", "first_gift": "2000-08-29", "gifts": "115", "donors": "115", "avg_gift": "100", "dollars": "11443", "era": "1998-2015"}, {"drop_code": "2000 dm7", "first_gift": "2000-09-15", "gifts": "117", "donors": "116", "avg_gift": "47", "dollars": "5510", "era": "1998-2015"}, {"drop_code": "cc2000DM1", "first_gift": "2000-09-25", "gifts": "61", "donors": "60", "avg_gift": "59", "dollars": "3599", "era": "1998-2015"}, {"drop_code": "2000 dm8", "first_gift": "2000-10-26", "gifts": "63", "donors": "63", "avg_gift": "59", "dollars": "3723", "era": "1998-2015"}, {"drop_code": "Dm1", "first_gift": "2001-03-26", "gifts": "133", "donors": "133", "avg_gift": "44", "dollars": "5812", "era": "1998-2015"}, {"drop_code": "Dm 01", "first_gift": "2001-04-03", "gifts": "47", "donors": "46", "avg_gift": "68", "dollars": "3211", "era": "1998-2015"}, {"drop_code": "Dm 01 B", "first_gift": "2001-06-18", "gifts": "119", "donors": "118", "avg_gift": "55", "dollars": "6497", "era": "1998-2015"}, {"drop_code": "DM 01 C", "first_gift": "2001-07-06", "gifts": "91", "donors": "91", "avg_gift": "48", "dollars": "4366", "era": "1998-2015"}, {"drop_code": "DM0606", "first_gift": "2001-07-16", "gifts": "260", "donors": "254", "avg_gift": "116", "dollars": "30081", "era": "1998-2015"}, {"drop_code": "DM 01 E", "first_gift": "2001-11-28", "gifts": "42", "donors": "42", "avg_gift": "41", "dollars": "1717", "era": "1998-2015"}, {"drop_code": "DM 02 A", "first_gift": "2002-04-02", "gifts": "127", "donors": "126", "avg_gift": "82", "dollars": "10425", "era": "1998-2015"}, {"drop_code": "DM 02 C", "first_gift": "2002-07-29", "gifts": "65", "donors": "65", "avg_gift": "40", "dollars": "2580", "era": "1998-2015"}, {"drop_code": "DM 03 A", "first_gift": "2003-04-17", "gifts": "174", "donors": "174", "avg_gift": "51", "dollars": "8898", "era": "1998-2015"}, {"drop_code": "DM 03 B", "first_gift": "2003-08-13", "gifts": "66", "donors": "66", "avg_gift": "48", "dollars": "3180", "era": "1998-2015"}, {"drop_code": "DM 04 A", "first_gift": "2004-03-22", "gifts": "247", "donors": "244", "avg_gift": "56", "dollars": "13866", "era": "1998-2015"}, {"drop_code": "DM 04 C", "first_gift": "2004-08-27", "gifts": "115", "donors": "115", "avg_gift": "86", "dollars": "9935", "era": "1998-2015"}, {"drop_code": "DM 04 D", "first_gift": "2004-10-15", "gifts": "64", "donors": "64", "avg_gift": "64", "dollars": "4086", "era": "1998-2015"}, {"drop_code": "DM 05 A", "first_gift": "2005-01-28", "gifts": "205", "donors": "201", "avg_gift": "55", "dollars": "11375", "era": "1998-2015"}, {"drop_code": "DM 05 B", "first_gift": "2005-09-06", "gifts": "137", "donors": "137", "avg_gift": "58", "dollars": "7910", "era": "1998-2015"}, {"drop_code": "DM0608", "first_gift": "2006-08-08", "gifts": "37", "donors": "37", "avg_gift": "231", "dollars": "8560", "era": "1998-2015"}, {"drop_code": "07 TK Mail", "first_gift": "2007-09-21", "gifts": "184", "donors": "184", "avg_gift": "194", "dollars": "35675", "era": "1998-2015"}, {"drop_code": "08 Webb MP", "first_gift": "2008-09-22", "gifts": "262", "donors": "262", "avg_gift": "69", "dollars": "18200", "era": "1998-2015"}, {"drop_code": "09_1DM", "first_gift": "2009-03-24", "gifts": "436", "donors": "433", "avg_gift": "51", "dollars": "22409", "era": "1998-2015"}, {"drop_code": "09_2DM", "first_gift": "2009-10-28", "gifts": "133", "donors": "133", "avg_gift": "77", "dollars": "10195", "era": "1998-2015"}, {"drop_code": "10_Mem", "first_gift": "2010-04-08", "gifts": "421", "donors": "420", "avg_gift": "51", "dollars": "21293", "era": "1998-2015"}, {"drop_code": "11_TheyWin", "first_gift": "2011-09-08", "gifts": "345", "donors": "345", "avg_gift": "56", "dollars": "19366", "era": "1998-2015"}, {"drop_code": "15_DM", "first_gift": "2015-09-10", "gifts": "120", "donors": "120", "avg_gift": "44", "dollars": "5256", "era": "1998-2015"}, {"drop_code": "23_Inc_Mail_22Mailer", "first_gift": "2022-12-30", "gifts": "428", "donors": "418", "avg_gift": "99", "dollars": "42429", "era": "2022-25"}, {"drop_code": "2024_Swecker", "first_gift": "2024-07-22", "gifts": "359", "donors": "355", "avg_gift": "112", "dollars": "40385", "era": "2022-25"}, {"drop_code": "Core_Inc_Mail_24HWK", "first_gift": "2024-10-04", "gifts": "265", "donors": "263", "avg_gift": "135", "dollars": "35857", "era": "2022-25"}, {"drop_code": "Core_Inc_Mail_24OctoberSwecker", "first_gift": "2024-10-28", "gifts": "147", "donors": "146", "avg_gift": "91", "dollars": "13427", "era": "2022-25"}, {"drop_code": "Core_Inc_Mail_25Bagby", "first_gift": "2025-05-01", "gifts": "288", "donors": "287", "avg_gift": "106", "dollars": "30544", "era": "2022-25"}], "mail_lag": [{"era": "1998-2015", "days": "30", "share_in": ".659"}, {"era": "1998-2015", "days": "60", "share_in": ".824"}, {"era": "1998-2015", "days": "90", "share_in": ".876"}, {"era": "2022-25", "days": "30", "share_in": ".753"}, {"era": "2022-25", "days": "60", "share_in": ".868"}, {"era": "2022-25", "days": "90", "share_in": ".915"}], "model_stats": [{"model": "Any Dem donor", "holdout_auc": "0.900", "labelled_donors": "307566", "train_rows": "1477023", "label_since": "2022-01-01", "scored_at": "2026-10-20"}, {"model": "Federal", "holdout_auc": "0.909", "labelled_donors": "264621", "train_rows": "1452334", "label_since": "2022-01-01", "scored_at": "2026-10-20"}, {"model": "State/local", "holdout_auc": "0.914", "labelled_donors": "115628", "train_rows": "1362188", "label_since": "2022-01-01", "scored_at": "2026-10-20"}], "months": [{"month": "Jan", "month_num": "1", "gift_index": "0.73", "gift_index_all": "0.73", "typical_gift": "20", "assumption": "Conservative"}, {"month": "Feb", "month_num": "2", "gift_index": "0.58", "gift_index_all": "0.62", "typical_gift": "19", "assumption": "Conservative"}, {"month": "Mar", "month_num": "3", "gift_index": "0.82", "gift_index_all": "0.79", "typical_gift": "20", "assumption": "Conservative"}, {"month": "Apr", "month_num": "4", "gift_index": "0.72", "gift_index_all": "0.74", "typical_gift": "20", "assumption": "Conservative"}, {"month": "May", "month_num": "5", "gift_index": "0.70", "gift_index_all": "0.66", "typical_gift": "18", "assumption": "Conservative"}, {"month": "Jun", "month_num": "6", "gift_index": "0.96", "gift_index_all": "0.90", "typical_gift": "20", "assumption": "Expected"}, {"month": "Jul", "month_num": "7", "gift_index": "0.99", "gift_index_all": "0.98", "typical_gift": "19", "assumption": "Expected"}, {"month": "Aug", "month_num": "8", "gift_index": "1.08", "gift_index_all": "1.08", "typical_gift": "19", "assumption": "Expected"}, {"month": "Sep", "month_num": "9", "gift_index": "1.72", "gift_index_all": "1.79", "typical_gift": "22", "assumption": "Optimistic"}, {"month": "Oct", "month_num": "10", "gift_index": "2.25", "gift_index_all": "2.30", "typical_gift": "21", "assumption": "Optimistic"}, {"month": "Nov", "month_num": "11", "gift_index": "0.79", "gift_index_all": "0.78", "typical_gift": "18", "assumption": "Conservative"}, {"month": "Dec", "month_num": "12", "gift_index": "0.68", "gift_index_all": "0.63", "typical_gift": "17", "assumption": "Conservative"}], "overlap": [{"group": "Top 10% on both", "voters": "525271", "fed_donors": "159174", "state_donors": "79125", "non_donors": "347124"}, {"group": "Top 10% federal only", "voters": "121101", "fed_donors": "19592", "state_donors": "3180", "non_donors": "100395"}, {"group": "Top 10% state/local only", "voters": "121101", "fed_donors": "8556", "state_donors": "7134", "non_donors": "107896"}, {"group": "Neither", "voters": "5696239", "fed_donors": "77299", "state_donors": "26189", "non_donors": "5600731"}], "segments": [{"dimension": "Age", "segment": "18-29", "voters": "1222693", "donors": "10723", "top10": "4623", "prospects": "3517"}, {"dimension": "Age", "segment": "30-44", "voters": "1674985", "donors": "49814", "top10": "91166", "prospects": "68988"}, {"dimension": "Age", "segment": "45-64", "voters": "1985111", "donors": "111249", "top10": "243904", "prospects": "173151"}, {"dimension": "Age", "segment": "65-74", "voters": "888326", "donors": "75733", "top10": "170014", "prospects": "112569"}, {"dimension": "Age", "segment": "75+", "voters": "692597", "donors": "60047", "top10": "136665", "prospects": "88734"}, {"dimension": "VAN likely party", "segment": "ND", "voters": "2854684", "donors": "33550", "top10": "30822", "prospects": "23896"}, {"dimension": "VAN likely party", "segment": "SD", "voters": "1310277", "donors": "200923", "top10": "500277", "prospects": "336644"}, {"dimension": "VAN likely party", "segment": "LD", "voters": "799166", "donors": "43333", "top10": "89447", "prospects": "66352"}, {"dimension": "VAN likely party", "segment": "LR", "voters": "695993", "donors": "11163", "top10": "5610", "prospects": "4364"}, {"dimension": "VAN likely party", "segment": "SR", "voters": "523664", "donors": "7115", "top10": "626", "prospects": "508"}, {"dimension": "VAN likely party", "segment": "I", "voters": "197290", "donors": "10347", "top10": "19065", "prospects": "14812"}, {"dimension": "VAN likely party", "segment": "U", "voters": "82638", "donors": "1135", "top10": "525", "prospects": "383"}, {"dimension": "Race (VAN coded)", "segment": "White", "voters": "4507778", "donors": "246191", "top10": "540417", "prospects": "368935"}, {"dimension": "Race (VAN coded)", "segment": "Black", "voters": "1025646", "donors": "33138", "top10": "58826", "prospects": "43084"}, {"dimension": "Race (VAN coded)", "segment": "Asian", "voters": "422992", "donors": "15865", "top10": "27958", "prospects": "20946"}, {"dimension": "Race (VAN coded)", "segment": "Hispanic", "voters": "366720", "donors": "8122", "top10": "11260", "prospects": "8090"}, {"dimension": "Race (VAN coded)", "segment": "Other", "voters": "109420", "donors": "4090", "top10": "7876", "prospects": "5875"}, {"dimension": "Race (VAN coded)", "segment": "Native", "voters": "1464", "donors": "28", "top10": "33", "prospects": "27"}, {"dimension": "DNC education score", "segment": "0-19", "voters": "691570", "donors": "7613", "top10": "7253", "prospects": ""}, {"dimension": "DNC education score", "segment": "20-39", "voters": "2103032", "donors": "60009", "top10": "119979", "prospects": ""}, {"dimension": "DNC education score", "segment": "40-59", "voters": "1954625", "donors": "102360", "top10": "216782", "prospects": ""}, {"dimension": "DNC education score", "segment": "60-79", "voters": "1470491", "donors": "120662", "top10": "265926", "prospects": ""}, {"dimension": "DNC education score", "segment": "80-100", "voters": "243167", "donors": "16919", "top10": "36428", "prospects": ""}, {"dimension": "Dem support score", "segment": "0-19", "voters": "1205458", "donors": "11448", "top10": "540", "prospects": ""}, {"dimension": "Dem support score", "segment": "20-39", "voters": "1125767", "donors": "14523", "top10": "6673", "prospects": ""}, {"dimension": "Dem support score", "segment": "40-59", "voters": "1005705", "donors": "17997", "top10": "18691", "prospects": ""}, {"dimension": "Dem support score", "segment": "60-79", "voters": "1257546", "donors": "35693", "top10": "59768", "prospects": ""}, {"dimension": "Dem support score", "segment": "80-100", "voters": "1839032", "donors": "227770", "top10": "560697", "prospects": ""}], "tm": [{"group": "Neither", "voters": "5611192", "donors": "93325"}, {"group": "TargetSmart top 10% only", "voters": "206148", "donors": "14828"}, {"group": "Our top 10% only", "voters": "215161", "donors": "47728"}, {"group": "Both top 10%", "voters": "431211", "donors": "151685"}]};
+  const calcs = {}, handlers = [];
+  const ok = (rows) => ({ status: 'ok', data: rows, rows, columns: rows.length ? Object.keys(rows[0]) : [], refreshing: false, meta: [] });
+  window.dash = {
+    colors: ['#3a8fd4', '#2fb36b', '#f0a500', '#9a83c9', '#6f9fbf', '#d24a3c', '#596079', '#c98a3a'],
+    data(id) {
+      if (calcs[id]) return ok(calcs[id].fn(...calcs[id].inputs.map((i) => this.data(i).data)));
+      return DATA[id] ? ok(DATA[id]) : { status: 'missing', data: [], rows: [], columns: [], message: 'No data for ' + id };
+    },
+    calc(id, spec) { calcs[id] = spec; },
+    loader() {}, refresh() {}, params() { return {}; }, setParams() {}, resetParams() {}, setLink() {},
+    onData(fn) { handlers.push(fn); fn(); },
+  };
+  let t; window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout(() => handlers.forEach((f) => f()), 150); });
+})();
+</script>
+<style>
+  .ds { font-family: var(--font-anthropic-sans); display: grid; gap: var(--cds-gap-xl); max-width: 76rem; margin-inline: auto; }
+  .ds h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
+  .ds h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; text-wrap: balance; }
+  .ds h3 { font-size: var(--cds-font-size-body); font-weight: var(--cds-font-weight-medium); margin: 0; }
+  .ds p { margin: 0; }
+  .ds-head { display: grid; gap: var(--cds-gap-sm); }
+  .ds-take { color: var(--color-fg-muted); max-width: 62ch; }
+  .ds-take b, .ds-note b { font-weight: var(--cds-font-weight-medium); color: var(--color-fg); }
+  .ds-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); gap: var(--cds-gap-md); }
+  .ds-tile, .ds-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: grid; gap: var(--cds-gap-sm); align-content: start; min-width: 0; }
+  .ds-tile .lbl { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+  .ds-tile .big { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); font-variant-numeric: tabular-nums; }
+  .ds-section { display: grid; gap: var(--cds-gap-md); }
+  .ds-section > .ds-sub { color: var(--color-fg-muted); max-width: 70ch; }
+  .ds-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr)); gap: var(--cds-gap-md); }
+  .ds-note { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+  .ds-seg { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs); }
+  .ds-seg button { font: inherit; font-size: var(--cds-font-size-caption); padding: var(--cds-pad-xs) var(--cds-pad-sm); border-radius: var(--cds-radius); border: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); cursor: pointer; }
+  .ds-seg button[aria-pressed="true"] { background: var(--color-fg); color: var(--color-bg); border-color: var(--color-fg); }
+  .ds-seg button:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 2px; }
+  .ds-chart { position: relative; min-height: 15rem; }
+  .ds-chart svg { display: block; overflow: visible; }
+  .ds-tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); white-space: nowrap; z-index: 2; }
+  .ds-tip .t { color: var(--cds-text-secondary); }
+  .ds-tablebox { overflow-x: auto; max-height: 28rem; overflow-y: auto; }
+  .ds table { width: 100%; border-collapse: collapse; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
+  .ds th, .ds td { padding: var(--cds-pad-xs) var(--cds-pad-sm); text-align: right; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+  .ds th:first-child, .ds td:first-child { text-align: left; }
+  .ds th { color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); position: sticky; top: 0; background: var(--color-panel); }
+  .ds td.barcell { min-width: 8rem; }
+  .ds .bar { display: flex; align-items: center; gap: var(--cds-gap-xs); justify-content: flex-end; }
+  .ds .bar i { display: block; height: 0.5rem; border-radius: 4px; background: var(--cds-chart-muted); }
+  .ds .bar i.hot { background: var(--ds-accent); }
+  .ds .fail { display: flex; align-items: center; justify-content: center; gap: var(--cds-gap-xs); color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); min-height: inherit; }
+  .ds .fail::before { content: ""; width: 0.375rem; height: 0.375rem; border-radius: 50%; background: var(--color-bad); }
+  .ds [data-dash-source-state=empty] { color: transparent; }
+  .ds [data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+  .ds-legend { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs) var(--cds-gap-md); color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+  .ds-legend i { display: inline-block; width: 0.625rem; height: 0.625rem; border-radius: 2px; margin-right: var(--cds-gap-xs); vertical-align: -1px; }
+  .ds ul.ds-method { margin: 0; padding-left: 1.1rem; display: grid; gap: var(--cds-gap-xs); color: var(--color-fg-muted); max-width: 75ch; }
+</style>
+
+<div class="ds" id="donor-scores">
+  <header class="ds-head">
+    <h1 id="title">Donor score breakdown</h1>
+    <p class="ds-take" id="takeaway">
+      The top 10% of voters by Donor Score holds
+      <b class="dash-skeleton" data-source="summary" data-field="top_capture" data-where="model=Any Dem donor">—</b>
+      of everyone who gave to a Dem-side recipient since 2022, and
+      <b class="dash-skeleton" data-source="summary" data-field="top_prospects" data-where="model=Any Dem donor">—</b>
+      voters in that top 10% have not given yet.
+    </p>
+  </header>
+
+  <section class="ds-tiles" id="tiles" aria-label="Headline figures">
+    <div class="ds-tile"><span class="lbl">Voters scored (VA, VAN)</span><span class="big dash-skeleton" data-source="summary" data-field="voters" data-where="model=Any Dem donor">—</span></div>
+    <div class="ds-tile"><span class="lbl">Dem-side donors since 2022</span><span class="big dash-skeleton" data-source="summary" data-field="donors" data-where="model=Any Dem donor">—</span></div>
+    <div class="ds-tile"><span class="lbl">Donor rate, top 10% vs all voters</span><span class="big"><span class="dash-skeleton" data-source="summary" data-field="top_rate" data-where="model=Any Dem donor">—</span> <span class="ds-note">vs <span data-source="summary" data-field="base_rate" data-where="model=Any Dem donor">—</span></span></span></div>
+    <div class="ds-tile"><span class="lbl">Holdout AUC, Donor Score</span><span class="big dash-skeleton" data-source="model_stats" data-field="holdout_auc" data-where="model=Any Dem donor">—</span></div>
+  </section>
+
+  <section class="ds-section" id="sorting">
+    <h2>How well each score sorts donors</h2>
+    <p class="ds-sub">Voters split into ten equal groups by score (10 is the highest). Each bar is the share of that score's donors who fall in the group. All three scores put most donors in the top group.</p>
+    <div class="ds-grid">
+      <div class="ds-card">
+        <h3>Share of donors by score decile</h3>
+        <div class="ds-chart dash-skeleton" id="decile-chart" data-source="deciles"></div>
+        <div class="ds-legend" id="decile-legend" data-source="deciles"></div>
+      </div>
+      <div class="ds-card">
+        <h3>Share of donors caught</h3>
+        <p class="ds-note">Of the voters who gave, the share whose score puts them in the top 10%, 20% or 30%. AUC is measured on 20% of voters held out of training.</p>
+        <div class="ds-tablebox">
+          <table id="capture-table" data-source="summary" data-row-key="model">
+            <thead><tr>
+              <th data-field="model">Score</th>
+              <th data-field="donors">Donors</th>
+              <th data-field="top_capture">Top 10%</th>
+              <th data-field="top20_capture">Top 20%</th>
+              <th data-field="top30_capture">Top 30%</th>
+              <th data-source="auc_view" data-field="holdout_auc">AUC</th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="ds-section" id="prospects">
+    <h2>Where the prospects are</h2>
+    <p class="ds-sub">Prospects are voters in the top 10% of a score who have not given at that level since 2022. Northern Virginia leads, but CD 1 has more state/local prospects than CD 11.</p>
+    <div class="ds-grid">
+      <div class="ds-card">
+        <div class="ds-seg" id="cd-pick" role="group" aria-label="Prospect type"></div>
+        <h3 id="cd-title">Prospects by congressional district</h3>
+        <div class="ds-chart dash-skeleton" id="cd-chart" data-source="cd"></div>
+      </div>
+      <div class="ds-card">
+        <h3>Top 20 localities by prospects</h3>
+        <p class="ds-note">Any Dem-side prospects (Donor Score top 10%, not yet a donor). Textable counts each number VAN flags as a cell (Verified or Likely Cell) once.</p>
+        <div class="ds-tablebox">
+          <table id="county-table" data-source="county_view" data-row-key="locality">
+            <thead><tr>
+              <th data-field="locality">Locality</th>
+              <th data-field="voters">Voters</th>
+              <th data-field="donor_rate">Donor rate</th>
+              <th data-field="prospects">Prospects</th>
+              <th data-field="textable">Textable</th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="ds-section" id="who">
+    <h2>Who scores high</h2>
+    <p class="ds-sub">Each group's share of all voters against its share of the top 10%. The score copies who gives today: older, strong-Dem, college-educated and white voters are over-represented, and young and Black voters are under-represented.</p>
+    <div class="ds-card">
+      <div class="ds-seg" id="dim-pick" role="group" aria-label="Breakdown"></div>
+      <div class="ds-tablebox">
+        <table id="segment-table" data-source="segment_view" data-row-key="id">
+          <thead><tr>
+            <th data-field="segment">Group</th>
+            <th data-field="voters">Voters</th>
+            <th data-field="donor_rate">Donor rate</th>
+            <th data-field="share_voters">Share of voters</th>
+            <th data-field="share_top">Share of top 10%</th>
+            <th data-field="prospects">Prospects</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="ds-note">VAN's LikelyParty codes are shown as VAN exports them (SD, LD, ND, I, LR, SR, U). Prospects are not split for the two score bands.</p>
+    </div>
+  </section>
+
+  <section class="ds-section" id="compare">
+    <h2>Federal vs state, and ours vs TargetSmart</h2>
+    <div class="ds-grid">
+      <div class="ds-card">
+        <h3>Federal and state/local top 10% overlap</h3>
+        <p class="ds-note">Most top voters are top on both. The two single-score groups are where the scores disagree.</p>
+        <div class="ds-tablebox">
+          <table id="overlap-table" data-source="overlap_view" data-row-key="group">
+            <thead><tr>
+              <th data-field="group">Group</th>
+              <th data-field="voters">Voters</th>
+              <th data-field="fed_rate">Fed donor rate</th>
+              <th data-field="state_rate">State donor rate</th>
+              <th data-field="non_donors">Not yet donors</th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="ds-card">
+        <h3>Donor Score vs VAN's TargetSmart donor score</h3>
+        <p class="ds-note">Where the two scores disagree, voters only our score ranks in the top 10% give about three times as often as voters only TargetSmart's ranks there.</p>
+        <div class="ds-tablebox">
+          <table id="tm-table" data-source="tm_view" data-row-key="group">
+            <thead><tr>
+              <th data-field="group">Group</th>
+              <th data-field="voters">Voters</th>
+              <th data-field="donors">Donors</th>
+              <th data-field="donor_rate">Donor rate</th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="ds-section" id="giving">
+    <h2>Giving by score decile</h2>
+    <p class="ds-sub">Among voters who already give, the score tracks how often they give more than how much. Top-decile donors make far more gifts than donors in any other decile. Average dollars per donor are lowest in the bottom deciles but uneven above the middle.</p>
+    <div class="ds-card">
+      <div class="ds-tablebox">
+        <table id="giving-table" data-source="giving" data-row-key="decile">
+          <thead><tr>
+            <th data-field="decile">Decile</th>
+            <th data-field="donors">Donors</th>
+            <th data-field="avg_gifts">Avg gifts</th>
+            <th data-field="avg_total">Avg lifetime $</th>
+            <th data-field="sum_total">Total $</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="ds-note">Lifetime giving is every matched gift in VA_DONORS, all years and all recipients, so it includes gifts before 2022.</p>
+    </div>
+  </section>
+
+  <section class="ds-section" id="timing">
+    <h2>When DPVA donors give</h2>
+    <p class="ds-sub">DPVA's one-time gifts under $100 in each calendar month, compared with an average month (1.00×). The figure is the median of 2018–2025, ActBlue and NGP. Under $100 leaves out event money and voter-file subscription sales. Every year peaks in September and October. The playbook's mail calculator uses these months to pick a conservative, expected or optimistic return.</p>
+    <div class="ds-grid">
+      <div class="ds-card">
+        <h3 id="month-title">Gifts vs an average month</h3>
+        <div class="ds-chart dash-skeleton" id="month-chart" data-source="months"></div>
+        <div class="ds-legend" id="month-legend" data-source="months"></div>
+      </div>
+      <div class="ds-card">
+        <h3>By month</h3>
+        <div class="ds-tablebox">
+          <table id="month-table" data-source="months" data-row-key="month">
+            <thead><tr>
+              <th data-field="month">Month</th>
+              <th data-field="gift_index">Under $100</th>
+              <th data-field="gift_index_all">All one-time</th>
+              <th data-field="typical_gift">Typical gift</th>
+              <th data-field="assumption">Return assumption</th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p class="ds-note">Typical gift is the median, across years, of each month's average gift under $100. This shows when donors gave, which follows when DPVA asked. It is not a measured mail response.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="ds-section" id="mail">
+    <h2>Direct-mail history</h2>
+    <p class="ds-sub">Gifts to DPVA's direct-mail appeals in NGP: 38 source codes, 1998 to 2025. Dollars for Democrats memo entries and Victory Fund allocations are left out, because they are not mail response. The drops since 2022 bring in larger gifts than the online program, and most gifts arrive within a month.</p>
+    <div class="ds-tiles" id="mail-tiles">
+      <div class="ds-tile"><span class="lbl">Average mail gift, 2022–25 drops</span><span class="big dash-skeleton" data-source="mail_summary" data-field="avg_gift" data-where="era=2022-25">—</span></div>
+      <div class="ds-tile"><span class="lbl">Gifts of $100 or more, 2022–25</span><span class="big dash-skeleton" data-source="mail_summary" data-field="share_100" data-where="era=2022-25">—</span></div>
+      <div class="ds-tile"><span class="lbl">Gifts in by 60 days, 2022–25</span><span class="big dash-skeleton" data-source="mail_lag" data-field="share_in" data-where="era=2022-25&amp;days=60">—</span></div>
+      <div class="ds-tile"><span class="lbl">Gifts in by 90 days, 2022–25</span><span class="big dash-skeleton" data-source="mail_lag" data-field="share_in" data-where="era=2022-25&amp;days=90">—</span></div>
+    </div>
+    <div class="ds-grid">
+      <div class="ds-card">
+        <h3 id="drops-title">Gifts per mail drop</h3>
+        <div class="ds-chart dash-skeleton" id="drops-chart" data-source="mail_drops"></div>
+        <div class="ds-legend" id="drops-legend" data-source="mail_drops"></div>
+        <p class="ds-note">One bar per source code, oldest first, labeled by year. Hover a bar for the code, gifts and average gift.</p>
+      </div>
+      <div class="ds-card">
+        <h3>The 2022–25 drops</h3>
+        <div class="ds-tablebox">
+          <table id="drops-table" data-source="mail_drops" data-row-key="drop_code">
+            <thead><tr>
+              <th data-field="drop_code">Source code</th>
+              <th data-field="first_gift">First gift</th>
+              <th data-field="gifts">Gifts</th>
+              <th data-field="donors">Donors</th>
+              <th data-field="avg_gift">Avg gift</th>
+              <th data-field="dollars">Dollars</th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p class="ds-note">The number of pieces mailed per drop is not in NGP yet. With it, these gift counts become measured response rates.</p>
+        <h3>Gift sizes then and now</h3>
+        <p class="ds-note">Each gift size as a share of all mail gifts in that period, and of 2022–25 mail dollars.</p>
+        <div class="ds-tablebox">
+          <table id="bands-table" data-source="mail_band_view" data-row-key="band">
+            <thead><tr>
+              <th data-field="band">Gift</th>
+              <th data-field="old_share">Gifts, 1998–2015</th>
+              <th data-field="new_share">Gifts, 2022–25</th>
+              <th data-field="new_dollar_share">Dollars, 2022–25</th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="ds-section" id="method">
+    <h2>How the scores are built</h2>
+    <ul class="ds-method">
+      <li>One gradient-boosted model per score, trained on VAN voter data: Dem support, GOTV and PartyPoints scores, age, sex, race, registration and address tenure, vote history, Dem and Rep primary counts, phone and email on file, household size, county, media market, districts, the precinct's donor rate, and DNC education and volunteer scores.</li>
+      <li>A donor is a matched voter with a Dem-side gift since 2022-01-01: DPVA (ActBlue and NGP), any ActBlue gift, a Democratic candidate or party committee, or a PAC whose donors give almost only to Democrats.</li>
+      <li>Scores are statewide percentiles (1–100). About a third of real donors never matched to a voter, so they count as non-donors when the model trains.</li>
+      <li>Source: Finance.dbo.VOTER_DONOR_SCORES, built 2026-10-20 by build_donor_scores.py. These numbers are a snapshot and do not update on their own.</li>
+    </ul>
+  </section>
+</div>
+
+<script>
+(function () {
+  const fmt = d3.format(','), pct = d3.format('.1%'), pct0 = d3.format('.0%'), usd = d3.format('$,'), dec1 = d3.format('.1f');
+  const num = (v) => (v === '' || v == null ? NaN : Number(v));
+  const MODELS = ['Any Dem donor', 'Federal', 'State/local'];
+  const MODEL_LABEL = { 'Any Dem donor': 'Donor Score', 'Federal': 'Fed Donor Score', 'State/local': 'State/Local Donor Score' };
+  const state = { cd: 'prospects', dim: 'Age' };
+  window.__dsState = state;
+  document.getElementById('donor-scores').style.setProperty('--ds-accent', dash.colors[0]);
+
+  dash.calc('summary', {
+    title: 'Score summary by model',
+    description: 'Voters, donors, donor rates and the share of donors in the top deciles, per score.',
+    inputs: ['deciles'],
+    fn: (deciles) => ['Any Dem donor', 'Federal', 'State/local'].map((m) => {
+      const r = deciles.filter((d) => d.model === m).map((d) => ({ dec: Number(d.decile), v: Number(d.voters), n: Number(d.donors) }));
+      const voters = d3.sum(r, (d) => d.v), donors = d3.sum(r, (d) => d.n);
+      const topN = (k) => d3.sum(r.filter((d) => d.dec > 10 - k), (d) => d.n);
+      const t = r.find((d) => d.dec === 10);
+      return { model: m, voters, donors, base_rate: donors / voters, top_rate: t.n / t.v,
+               top_capture: topN(1) / donors, top20_capture: topN(2) / donors, top30_capture: topN(3) / donors,
+               top_prospects: t.v - t.n };
+    }),
+  });
+  dash.calc('auc_view', {
+    title: 'Holdout AUC by model', description: 'The model stats file, keyed by score for the capture table.',
+    inputs: ['model_stats'], fn: (model_stats) => model_stats.map((r) => ({ model: r.model, holdout_auc: Number(r.holdout_auc) })),
+  });
+  dash.calc('county_view', {
+    title: 'Localities with donor rate', description: 'Top 20 localities by prospects, with donors divided by voters and textable prospect numbers.',
+    inputs: ['county'], fn: (county) => county.map((r) => ({ locality: r.locality, voters: Number(r.voters), donor_rate: Number(r.donors) / Number(r.voters), prospects: Number(r.prospects), textable: Number(r.textable) })),
+  });
+  dash.calc('segment_view', {
+    title: 'Groups vs the top 10%', description: 'Each group’s share of all voters and of the Donor Score top 10%, and its donor rate.',
+    inputs: ['segments'],
+    fn: (segments) => {
+      const tot = d3.rollup(segments, (g) => ({ v: d3.sum(g, (d) => Number(d.voters)), t: d3.sum(g, (d) => Number(d.top10)) }), (d) => d.dimension);
+      return segments.map((r) => ({ id: r.dimension + ': ' + r.segment, dimension: r.dimension, segment: r.segment, voters: Number(r.voters),
+        donor_rate: Number(r.donors) / Number(r.voters), share_voters: Number(r.voters) / tot.get(r.dimension).v,
+        share_top: Number(r.top10) / tot.get(r.dimension).t, prospects: r.prospects === '' ? null : Number(r.prospects) }));
+    },
+  });
+  dash.calc('overlap_view', {
+    title: 'Federal vs state top 10%', description: 'Donor rates for voters in the top 10% of one, both or neither of the two level scores.',
+    inputs: ['overlap'], fn: (overlap) => overlap.map((r) => ({ group: r.group, voters: Number(r.voters), fed_rate: Number(r.fed_donors) / Number(r.voters), state_rate: Number(r.state_donors) / Number(r.voters), non_donors: Number(r.non_donors) })),
+  });
+  dash.calc('tm_view', {
+    title: 'Donor Score vs TargetSmart', description: 'Donor rate by whether each score ranks the voter in its top 10%.',
+    inputs: ['tm'], fn: (tm) => tm.map((r) => ({ group: r.group, voters: Number(r.voters), donors: Number(r.donors), donor_rate: Number(r.donors) / Number(r.voters) })),
+  });
+
+  // ---- shared helpers
+  dash.calc('mail_summary', {
+    title: 'Mail drops summary by era',
+    description: 'Drops, gifts, average gift and the share of gifts of $100 or more, for 1998-2015 and 2022-25.',
+    inputs: ['mail_drops', 'mail_bands'],
+    fn: (mail_drops, mail_bands) => ['1998-2015', '2022-25'].map((era) => {
+      const d = mail_drops.filter((r) => r.era === era), b = mail_bands.filter((r) => r.era === era);
+      const gifts = d3.sum(d, (r) => Number(r.gifts)), dollars = d3.sum(d, (r) => Number(r.dollars));
+      const big = d3.sum(b.filter((r) => Number(r.band_order) >= 4), (r) => Number(r.gifts)) / d3.sum(b, (r) => Number(r.gifts));
+      return { era, drops: d.length, gifts, avg_gift: Math.round(dollars / gifts), share_100: big };
+    }),
+  });
+  dash.calc('mail_band_view', {
+    title: 'Mail gift sizes by era',
+    description: 'Each gift-size band as a share of gifts (both eras) and of dollars (2022-25).',
+    inputs: ['mail_bands'],
+    fn: (mail_bands) => {
+      const tot = (era, f) => d3.sum(mail_bands.filter((r) => r.era === era), (r) => Number(r[f]));
+      const bands = [...new Set(mail_bands.map((r) => r.band))];
+      return bands.map((band) => {
+        const o = mail_bands.find((r) => r.band === band && r.era === '1998-2015'), n = mail_bands.find((r) => r.band === band && r.era === '2022-25');
+        return { band, order: Number((o || n).band_order), old_share: o ? Number(o.gifts) / tot('1998-2015', 'gifts') : 0,
+                 new_share: n ? Number(n.gifts) / tot('2022-25', 'gifts') : 0, new_dollar_share: n ? Number(n.dollars) / tot('2022-25', 'dollars') : 0 };
+      }).sort((a, b) => a.order - b.order);
+    },
+  });
+  function failLine(el) { el.innerHTML = ''; const d = document.createElement('div'); d.className = 'fail'; d.textContent = 'Failed to load'; el.appendChild(d); }
+  function pills(id, options, key, redraw) {
+    const box = document.getElementById(id);
+    if (box.childElementCount) { box.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.v === state[key]))); return; }
+    options.forEach(([v, label]) => {
+      const b = document.createElement('button'); b.type = 'button'; b.dataset.v = v; b.textContent = label;
+      b.setAttribute('aria-pressed', String(v === state[key]));
+      b.addEventListener('click', () => { state[key] = v; redraw(); });
+      box.appendChild(b);
+    });
+  }
+  function tipFor(box) {
+    let tip = box.querySelector('.ds-tip');
+    if (!tip) { tip = document.createElement('div'); tip.className = 'ds-tip'; tip.hidden = true; box.appendChild(tip); }
+    return {
+      show(ev, lines) {
+        tip.replaceChildren(...lines.map((l, i) => { const d = document.createElement('div'); if (i === 0) d.className = 't'; d.textContent = l; return d; }));
+        tip.hidden = false;
+        const bb = box.getBoundingClientRect(), [x, y] = [ev.clientX - bb.left, ev.clientY - bb.top];
+        const w = tip.offsetWidth, h = tip.offsetHeight;
+        tip.style.left = Math.max(0, Math.min(bb.width - w, x + 12)) + 'px';
+        tip.style.top = Math.max(0, y - h - 8) + 'px';
+      },
+      hide() { tip.hidden = true; },
+    };
+  }
+  function fillTable(id, res, cols, keyOf) {
+    const table = document.getElementById(id), tb = table.querySelector('tbody');
+    tb.replaceChildren();
+    if (res.status === 'error') { const tr = tb.insertRow(); const td = tr.insertCell(); td.colSpan = cols.length; failLine(td); return; }
+    if (res.status !== 'ok') return;
+    res.data.forEach((r) => {
+      const tr = tb.insertRow();
+      if (keyOf) tr.dataset.key = keyOf(r);
+      cols.forEach((c) => {
+        const td = tr.insertCell();
+        if (c.bar) {
+          td.className = 'barcell';
+          const wrap = document.createElement('span'); wrap.className = 'bar';
+          const i = document.createElement('i'); i.style.width = (Math.max(0, c.bar(r)) * 5) + 'rem'; if (c.hot && c.hot(r)) i.className = 'hot';
+          const s = document.createElement('span'); s.textContent = c.f(r);
+          wrap.append(i, s); td.appendChild(wrap);
+        } else td.textContent = c.f(r);
+      });
+    });
+  }
+  function axisStyle(g) { g.attr('font-size', null).attr('font-family', null); g.selectAll('text').attr('fill', 'var(--color-fg-muted)').style('font-size', 'var(--cds-font-size-caption)'); g.selectAll('line,path').attr('stroke', 'var(--cds-chart-axis)'); }
+
+  function barChart(box, rows, opt) {
+    box.querySelectorAll('svg').forEach((s) => s.remove());
+    const W = Math.max(280, box.clientWidth), H = 240;
+    const svg = d3.select(box).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img').attr('aria-label', opt.aria);
+    const yMax = d3.max(rows, opt.y) || 1;
+    const y = d3.scaleLinear([0, yMax * 1.08], [H - 28, 8]).nice();
+    // left margin from the widest tick label as drawn
+    const probe = svg.append('g'); const ticks = y.ticks(4);
+    const tw = d3.max(ticks.map((t) => probe.append('text').style('font-size', 'var(--cds-font-size-caption)').text(opt.yFmt(t)).node().getComputedTextLength())) || 20; probe.remove();
+    const m = { l: tw + 10, r: 6 };
+    const x = d3.scaleBand(rows.map(opt.x), [m.l, W - m.r]).padding(0.25);
+    svg.append('g').selectAll('line').data(ticks).join('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y).attr('y2', y).attr('stroke', 'var(--cds-chart-grid)');
+    svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(4).tickFormat(opt.yFmt).tickSize(0).tickPadding(6)).call(axisStyle).call((g) => g.select('.domain').remove());
+    const xa = svg.append('g').attr('transform', `translate(0,${H - 28})`).call(d3.axisBottom(x).tickSize(0).tickPadding(8)).call(axisStyle);
+    if (x.bandwidth() < 34) xa.selectAll('text').text((d) => opt.xShort ? opt.xShort(d) : d);
+    const tip = tipFor(box);
+    svg.append('g').selectAll('rect').data(rows).join('rect')
+      .attr('x', (d) => x(opt.x(d)) + Math.max(0, (x.bandwidth() - 32) / 2)).attr('width', Math.min(32, x.bandwidth()))
+      .attr('y', (d) => y(opt.y(d))).attr('height', (d) => y(0) - y(opt.y(d))).attr('rx', 4)
+      .attr('fill', (d) => (opt.fill ? opt.fill(d) : opt.hot(d) ? dash.colors[0] : 'var(--cds-chart-muted)'))
+      .on('mousemove', (ev, d) => tip.show(ev, opt.tip(d))).on('mouseleave', () => tip.hide());
+  }
+
+  function groupedChart(box, rows) {
+    box.querySelectorAll('svg').forEach((s) => s.remove());
+    const W = Math.max(280, box.clientWidth), H = 240, m = { l: 40, r: 6 };
+    const svg = d3.select(box).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img').attr('aria-label', 'Share of donors by score decile, three scores');
+    const y = d3.scaleLinear([0, d3.max(rows, (r) => r.s) * 1.08], [H - 28, 8]).nice();
+    const x = d3.scaleBand(d3.range(1, 11).map(String), [m.l, W - m.r]).padding(0.2);
+    const xi = d3.scaleBand(MODELS, [0, x.bandwidth()]).padding(0.08);
+    svg.append('g').selectAll('line').data(y.ticks(4)).join('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y).attr('y2', y).attr('stroke', 'var(--cds-chart-grid)');
+    svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(4).tickFormat(pct0).tickSize(0).tickPadding(6)).call(axisStyle).call((g) => g.select('.domain').remove());
+    svg.append('g').attr('transform', `translate(0,${H - 28})`).call(d3.axisBottom(x).tickSize(0).tickPadding(8)).call(axisStyle);
+    svg.append('g').selectAll('rect').data(rows).join('rect')
+      .attr('x', (r) => x(r.d) + xi(r.m)).attr('width', xi.bandwidth())
+      .attr('y', (r) => y(r.s)).attr('height', (r) => y(0) - y(r.s)).attr('rx', 2)
+      .attr('fill', (r) => dash.colors[MODELS.indexOf(r.m)]);
+  }
+
+  function draw() {
+    // headline + tiles: data-source marks, filled from the summary calc
+    const S = dash.data('summary'), A = dash.data('model_stats');
+    document.querySelectorAll('[data-source="summary"][data-field][data-where], [data-source="model_stats"][data-field][data-where]').forEach((el) => {
+      const res = el.dataset.source === 'summary' ? S : A;
+      if (res.status !== 'ok') { if (res.status === 'error') el.textContent = '—'; return; }
+      el.classList.remove('dash-skeleton');
+      const model = decodeURIComponent(el.dataset.where.split('=')[1]);
+      const r = res.data.find((d) => d.model === model); if (!r) return;
+      const f = el.dataset.field, v = r[f];
+      el.textContent = f === 'holdout_auc' ? Number(v).toFixed(3) : /rate|capture/.test(f) ? pct(v) : fmt(v);
+    });
+
+    // decile chart: share of each score's donors per decile, three bars per decile
+    const D = dash.data('deciles'), box = document.getElementById('decile-chart');
+    if (D.status === 'ok') {
+      box.classList.remove('dash-skeleton');
+      const tot = d3.rollup(D.data, (g) => d3.sum(g, (r) => Number(r.donors)), (r) => r.model);
+      const rows = D.data.map((r) => ({ m: r.model, d: String(r.decile), s: Number(r.donors) / tot.get(r.model) }));
+      groupedChart(box, rows);
+      const leg = document.getElementById('decile-legend');
+      leg.replaceChildren(...MODELS.map((m, i) => { const s = document.createElement('span'); const k = document.createElement('i'); k.style.background = dash.colors[i]; s.append(k, MODEL_LABEL[m]); return s; }));
+    } else if (D.status === 'error') { box.classList.remove('dash-skeleton'); failLine(box); }
+
+    // capture table
+    fillTable('capture-table', S, [
+      { f: (r) => MODEL_LABEL[r.model] }, { f: (r) => fmt(r.donors) }, { f: (r) => pct(r.top_capture) },
+      { f: (r) => pct(r.top20_capture) }, { f: (r) => pct(r.top30_capture) },
+      { f: (r) => { const a = dash.data('auc_view'); const x = a.status === 'ok' && a.data.find((d) => d.model === r.model); return x ? x.holdout_auc.toFixed(3) : '—'; } },
+    ], (r) => r.model);
+
+    // CD chart
+    const CDS = [['prospects', 'Any Dem'], ['fed_prospects', 'Federal'], ['state_prospects', 'State/local'], ['textable', 'Textable']];
+    pills('cd-pick', CDS, 'cd', draw);
+    document.getElementById('cd-title').textContent = state.cd === 'textable' ? 'Textable Any Dem prospect numbers by congressional district' : 'Prospects by congressional district, ' + CDS.find((c) => c[0] === state.cd)[1];
+    const C = dash.data('cd'), cbox = document.getElementById('cd-chart');
+    if (C.status === 'ok') {
+      cbox.classList.remove('dash-skeleton');
+      const rows = C.data.map((r) => ({ cd: r.cd, v: Number(r.voters), n: Number(r.donors), p: Number(r[state.cd]), any: Number(r.prospects), t: Number(r.textable) }));
+      const maxP = d3.max(rows, (r) => r.p);
+      barChart(cbox, rows, { aria: 'Prospects by congressional district', x: (r) => r.cd, xShort: (d) => d.replace('CD ', ''), y: (r) => r.p,
+        yFmt: d3.format('~s'), hot: (r) => r.p === maxP,
+        tip: (r) => state.cd === 'textable' ? [r.cd, fmt(r.t) + ' textable numbers', fmt(r.any) + ' Any Dem prospects', pct(r.t / r.any) + ' of prospects'] : [r.cd, fmt(r.p) + ' prospects', fmt(r.v) + ' voters', 'Donor rate ' + pct(r.n / r.v)] });
+    } else if (C.status === 'error') { cbox.classList.remove('dash-skeleton'); failLine(cbox); }
+
+    // county
+    const CV = dash.data('county_view'); const maxCP = CV.status === 'ok' ? d3.max(CV.data, (r) => r.prospects) : 1;
+    fillTable('county-table', CV, [
+      { f: (r) => r.locality }, { f: (r) => fmt(r.voters) }, { f: (r) => pct(r.donor_rate) },
+      { f: (r) => fmt(r.prospects), bar: (r) => r.prospects / maxCP, hot: () => true },
+      { f: (r) => fmt(r.textable) },
+    ]);
+
+    // segments
+    const SV = dash.data('segment_view');
+    if (SV.status === 'ok') pills('dim-pick', [...new Set(SV.data.map((r) => r.dimension))].map((d) => [d, d]), 'dim', draw);
+    const segRes = SV.status === 'ok' ? { ...SV, data: SV.data.filter((r) => r.dimension === state.dim) } : SV;
+    fillTable('segment-table', segRes, [
+      { f: (r) => r.segment }, { f: (r) => fmt(r.voters) }, { f: (r) => pct(r.donor_rate) },
+      { f: (r) => pct(r.share_voters), bar: (r) => r.share_voters },
+      { f: (r) => pct(r.share_top), bar: (r) => r.share_top, hot: (r) => r.share_top > r.share_voters },
+      { f: (r) => (r.prospects == null ? '—' : fmt(r.prospects)) },
+    ], (r) => r.id);
+
+    // overlap + tm
+    fillTable('overlap-table', dash.data('overlap_view'), [
+      { f: (r) => r.group }, { f: (r) => fmt(r.voters) }, { f: (r) => pct(r.fed_rate) }, { f: (r) => pct(r.state_rate) }, { f: (r) => fmt(r.non_donors) },
+    ]);
+    const TV = dash.data('tm_view'); const maxR = TV.status === 'ok' ? d3.max(TV.data, (r) => r.donor_rate) : 1;
+    fillTable('tm-table', TV, [
+      { f: (r) => r.group }, { f: (r) => fmt(r.voters) }, { f: (r) => fmt(r.donors) },
+      { f: (r) => pct(r.donor_rate), bar: (r) => r.donor_rate / maxR, hot: (r) => r.group === 'Our top 10% only' },
+    ]);
+
+    // giving
+    fillTable('giving-table', dash.data('giving'), [
+      { f: (r) => r.decile }, { f: (r) => fmt(num(r.donors)) }, { f: (r) => dec1(num(r.avg_gifts)) },
+      { f: (r) => usd(num(r.avg_total)) }, { f: (r) => usd(num(r.sum_total)) },
+    ]);
+
+    // months: bars colored by the return assumption each month gets
+    const ASSUME = [['Conservative', 'var(--color-warn)'], ['Expected', dash.colors[0]], ['Optimistic', 'var(--color-ok)']];
+    const fillOf = (a) => (ASSUME.find((x) => x[0] === a) || [0, 'var(--cds-chart-muted)'])[1];
+    const Mo = dash.data('months'), mbox = document.getElementById('month-chart'), leg = document.getElementById('month-legend');
+    leg.textContent = '';
+    if (Mo.status === 'ok') {
+      mbox.classList.remove('dash-skeleton');
+      const rows = Mo.data.map((r) => ({ m: r.month, x: num(r.gift_index), all: num(r.gift_index_all), g: num(r.typical_gift), a: r.assumption }));
+      barChart(mbox, rows, { aria: 'One-time gifts under $100 by month versus an average month', x: (r) => r.m, xShort: (d) => d.slice(0, 1), y: (r) => r.x,
+        yFmt: (v) => v.toFixed(1) + '×', hot: () => false, fill: (r) => fillOf(r.a),
+        tip: (r) => [r.m + ': ' + r.x.toFixed(2) + '× an average month', 'All one-time gifts: ' + r.all.toFixed(2) + '×', 'Typical gift $' + r.g, r.a + ' return'] });
+      [...new Set(rows.map((r) => r.a))].forEach((a) => {
+        const s = document.createElement('span'), i = document.createElement('i');
+        i.style.background = fillOf(a); s.append(i, document.createTextNode(a)); leg.appendChild(s);
+      });
+    } else if (Mo.status === 'error') { mbox.classList.remove('dash-skeleton'); failLine(mbox); }
+    fillTable('month-table', Mo, [
+      { f: (r) => r.month }, { f: (r) => num(r.gift_index).toFixed(2) + '×' }, { f: (r) => num(r.gift_index_all).toFixed(2) + '×' },
+      { f: (r) => usd(num(r.typical_gift)) }, { f: (r) => r.assumption },
+    ]);
+
+    // direct-mail history
+    document.querySelectorAll('[data-source="mail_summary"][data-field], [data-source="mail_lag"][data-field]').forEach((el) => {
+      const res = dash.data(el.dataset.source);
+      if (res.status !== 'ok') { if (res.status === 'error') el.textContent = '—'; return; }
+      const want = new URLSearchParams(el.dataset.where);
+      const r = res.data.find((d) => [...want].every(([k, v]) => String(d[k]) === v)); if (!r) return;
+      el.classList.remove('dash-skeleton');
+      const v = Number(r[el.dataset.field]);
+      el.textContent = el.dataset.field === 'avg_gift' ? usd(v) : pct0(v);
+    });
+    const MD = dash.data('mail_drops'), dbox = document.getElementById('drops-chart'), dleg = document.getElementById('drops-legend');
+    const ERA_FILL = { '2022-25': dash.colors[0], '1998-2015': 'var(--cds-chart-muted)' };
+    dleg.textContent = '';
+    if (MD.status === 'ok') {
+      dbox.classList.remove('dash-skeleton');
+      const rows = MD.data.map((r) => ({ code: r.drop_code, day: r.first_gift, yr: r.first_gift.slice(0, 4), g: num(r.gifts), avg: num(r.avg_gift), era: r.era }));
+      // label the first drop of a year, at least four bars after the last label
+      const firstOfYear = new Set(); let last = -9;
+      rows.forEach((r, i) => { if ((i === 0 || rows[i - 1].yr !== r.yr) && i - last >= 4) { firstOfYear.add(r.code); last = i; } });
+      const yrOf = new Map(rows.map((r) => [r.code, r.yr]));
+      barChart(dbox, rows, { aria: 'Gifts per DPVA direct-mail drop, oldest first', x: (r) => r.code, y: (r) => r.g, yFmt: fmt, hot: () => false,
+        xShort: (d) => (firstOfYear.has(d) ? "'" + yrOf.get(d).slice(2) : ''), fill: (r) => ERA_FILL[r.era],
+        tip: (r) => [r.code, 'First gift ' + r.day, fmt(r.g) + ' gifts', 'Average gift ' + usd(r.avg)] });
+      Object.entries(ERA_FILL).reverse().forEach(([era, c]) => {
+        const s = document.createElement('span'), i = document.createElement('i');
+        i.style.background = c; s.append(i, document.createTextNode(era)); dleg.appendChild(s);
+      });
+    } else if (MD.status === 'error') { dbox.classList.remove('dash-skeleton'); failLine(dbox); }
+    const recent = MD.status === 'ok' ? { ...MD, data: MD.data.filter((r) => r.era === '2022-25') } : MD;
+    fillTable('drops-table', recent, [
+      { f: (r) => r.drop_code }, { f: (r) => r.first_gift }, { f: (r) => fmt(num(r.gifts)) }, { f: (r) => fmt(num(r.donors)) },
+      { f: (r) => usd(num(r.avg_gift)) }, { f: (r) => usd(num(r.dollars)) },
+    ]);
+    const BV = dash.data('mail_band_view');
+    fillTable('bands-table', BV, [
+      { f: (r) => r.band }, { f: (r) => pct0(r.old_share), bar: (r) => r.old_share * 2 },
+      { f: (r) => pct0(r.new_share), bar: (r) => r.new_share * 2, hot: () => true }, { f: (r) => pct0(r.new_dollar_share) },
+    ], (r) => r.band);
+  }
+
+  dash.onData(draw);
+})();
+</script>
+
+</div>
+</body>
+</html>
